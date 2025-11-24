@@ -7,6 +7,7 @@ Bem-vindo à documentação completa do CRM Livraria! Este índice irá guiá-lo
 ### 🚀 Começando
 
 - **[README Principal](../README.md)** - Visão geral, instalação e primeiros passos
+- **[📖 Manual do Usuário](USER-GUIDE.md)** - Guia completo para clientes e administradores
 - **[Guia sobre CRM](CRM-GUIDE.md)** - O que é CRM, tipos e funcionalidades
 - **[FAQ](FAQ.md)** - Perguntas frequentes e troubleshooting
 - **[Guia de Contribuição](../CONTRIBUTING.md)** - Como contribuir com o projeto
