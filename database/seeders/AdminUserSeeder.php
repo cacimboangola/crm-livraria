@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
@@ -24,12 +24,12 @@ class AdminUserSeeder extends Seeder
                 'phone' => '(11) 99999-9999',
                 'active' => true,
             ]);
-            
+
             $this->command->info('Usuário administrador criado com sucesso!');
         } else {
             $this->command->info('Usuário administrador já existe, pulando criação.');
         }
-        
+
         $this->command->info('Email: admin@crm-livraria.com');
         $this->command->info('Senha: admin123');
     }

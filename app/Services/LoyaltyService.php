@@ -409,4 +409,16 @@ class LoyaltyService
             ]
         );
     }
+    
+    /**
+     * Adiciona pontos de fidelidade baseado em uma fatura.
+     * Alias para addPointsForPurchase para compatibilidade.
+     *
+     * @param Invoice $invoice
+     * @return \App\Models\LoyaltyTransaction|null
+     */
+    public function addPointsFromInvoice(Invoice $invoice): ?LoyaltyTransaction
+    {
+        return $this->addPointsForPurchase($invoice);
+    }
 }

@@ -11,6 +11,7 @@ use App\Services\LoyaltyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class CheckoutController extends Controller
@@ -30,11 +31,11 @@ class CheckoutController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:credit_card,debit_card,bank_transfer,pix,boleto',
+            'payment_method' => 'required|in:credit_card,debit_card,bank_transfer,multicaixa,cash',
         ]);
 
         $cart = Session::get('cart', []);
-        
+
         if (empty($cart)) {
             return redirect()->route('customer.catalog')->with('error', 'Seu carrinho está vazio!');
         }
@@ -43,6 +44,7 @@ class CheckoutController extends Controller
         $user = Auth::user();
         $customer = Customer::where('email', $user->email)->first();
 
+        // Criar cliente automaticamente se não existir
         if (!$customer) {
             return redirect()->route('customer.catalog')->with('error', 'Cliente não encontrado!');
         }
@@ -63,7 +65,7 @@ class CheckoutController extends Controller
             $invoice->status = 'pending';
             $invoice->payment_method = $request->payment_method;
             $invoice->notes = 'Pedido realizado pelo portal do cliente';
-            $invoice->total = 0; // Será atualizado após adicionar os itens
+            $invoice->total = 0;  // Será atualizado após adicionar os itens
             $invoice->save();
 
             $total = 0;
@@ -76,7 +78,7 @@ class CheckoutController extends Controller
                 $invoiceItem->quantity = $item['quantity'];
                 $invoiceItem->unit_price = $item['price'];
                 $invoiceItem->description = $item['title'];
-                $invoiceItem->tax_rate = 0; // Sem taxa para Angola
+                $invoiceItem->tax_rate = 0;  // Sem taxa para Angola
                 $invoiceItem->tax_amount = 0;
                 $invoiceItem->discount = 0;
                 $invoiceItem->subtotal = $item['price'] * $item['quantity'];
@@ -96,12 +98,18 @@ class CheckoutController extends Controller
             // Limpar o carrinho
             Session::forget('cart');
 
-            return redirect()->route('customer.order.details', $invoice->id)
-                ->with('success', 'Pedido realizado com sucesso! Aguardando pagamento.');
-
+            return redirect()
+                ->route('customer.orders')
+                ->with('success', 'Pedido realizado com sucesso! Número da fatura: ' . $invoice->invoice_number);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('customer.cart')
+            Log::error('Erro no checkout: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'cart' => $cart,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()
+                ->route('customer.cart')
                 ->with('error', 'Erro ao processar o pedido: ' . $e->getMessage());
         }
     }
@@ -117,7 +125,8 @@ class CheckoutController extends Controller
 
         // Verificar se a fatura pertence ao cliente autenticado
         if ($invoice->customer_id !== $customer->id) {
-            return redirect()->route('customer.orders')
+            return redirect()
+                ->route('customer.orders')
                 ->with('error', 'Você não tem permissão para acessar esta fatura.');
         }
 
@@ -134,12 +143,13 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            return redirect()->route('customer.order.details', $invoice->id)
+            return redirect()
+                ->route('customer.order.details', $invoice->id)
                 ->with('success', 'Pagamento confirmado! Pontos de fidelidade adicionados.');
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('customer.order.details', $invoice->id)
+            return redirect()
+                ->route('customer.order.details', $invoice->id)
                 ->with('error', 'Erro ao processar o pagamento: ' . $e->getMessage());
         }
     }
@@ -155,20 +165,23 @@ class CheckoutController extends Controller
 
         // Verificar se a fatura pertence ao cliente autenticado
         if ($invoice->customer_id !== $customer->id) {
-            return redirect()->route('customer.orders')
+            return redirect()
+                ->route('customer.orders')
                 ->with('error', 'Você não tem permissão para acessar esta fatura.');
         }
 
         // Verificar se a fatura pode ser cancelada
         if ($invoice->status !== 'pending') {
-            return redirect()->route('customer.order.details', $invoice->id)
+            return redirect()
+                ->route('customer.order.details', $invoice->id)
                 ->with('error', 'Apenas pedidos pendentes podem ser cancelados.');
         }
 
         $invoice->status = 'cancelled';
         $invoice->save();
 
-        return redirect()->route('customer.order.details', $invoice->id)
+        return redirect()
+            ->route('customer.order.details', $invoice->id)
             ->with('success', 'Pedido cancelado com sucesso.');
     }
 }

@@ -54,9 +54,9 @@
                                                 <small class="text-muted">{{ $item->book->author }}</small>
                                             @endif
                                         </td>
-                                        <td>R$ {{ number_format($item->price, 2, ',', '.') }}</td>
+                                        <td>Kz {{ number_format($item->unit_price, 2, ',', '.') }}</td>
                                         <td>{{ $item->quantity }}</td>
-                                        <td>R$ {{ number_format($item->price * $item->quantity, 2, ',', '.') }}</td>
+                                        <td>Kz {{ number_format($item->unit_price * $item->quantity, 2, ',', '.') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -80,25 +80,23 @@
                                 @break
                             @case('bank_transfer')
                                 <h6>Dados para Transferência:</h6>
-                                <p>Banco: Banco do Brasil<br>
-                                Agência: 1234-5<br>
-                                Conta: 12345-6<br>
+                                <p>Banco: Banco BIC<br>
+                                IBAN: AO06 0000 0000 0000 0000 0000 0<br>
                                 NIF: 000000000<br>
                                 Favorecido: Livraria CRM Ltda</p>
                                 <p>Após realizar a transferência, envie o comprovante para <strong>financeiro@crm-livraria.com</strong> informando o número do seu pedido.</p>
                                 @break
-                            @case('pix')
-                                <div class="text-center mb-3">
-                                    <img src="{{ asset('images/qrcode-pix.png') }}" alt="QR Code PIX" style="max-width: 200px;">
-                                </div>
-                                <p class="mb-3">Referência de Pagamento: 000000000</p>
-                                <p>Após realizar o pagamento, envie o comprovante para <strong>financeiro@crm-livraria.com</strong> informando o número do seu pedido.</p>
+                            @case('multicaixa')
+                                <h6>Pagamento via Multicaixa Express:</h6>
+                                <p>Referência: <strong>{{ str_pad($invoice->id, 9, '0', STR_PAD_LEFT) }}</strong></p>
+                                <p>Entidade: <strong>11223</strong></p>
+                                <p>Valor: <strong>Kz {{ number_format($invoice->total, 2, ',', '.') }}</strong></p>
+                                <p>Use a referência acima para efetuar o pagamento em qualquer terminal Multicaixa Express ou através do aplicativo.</p>
                                 @break
-                            @case('boleto')
-                                <p>O boleto foi enviado para seu e-mail. Você também pode baixá-lo clicando no botão abaixo:</p>
-                                <a href="#" class="btn btn-outline-primary">
-                                    <i class="fas fa-barcode me-2"></i> Baixar Boleto
-                                </a>
+                            @case('cash')
+                                <h6>Pagamento em Dinheiro:</h6>
+                                <p>O pagamento será realizado na entrega do pedido.</p>
+                                <p>Certifique-se de ter o valor exato: <strong>Kz {{ number_format($invoice->total, 2, ',', '.') }}</strong></p>
                                 @break
                             @default
                                 <p>Entre em contato com nossa equipe para obter instruções sobre como realizar o pagamento.</p>
@@ -167,11 +165,11 @@
                                 @case('bank_transfer')
                                     Transferência Bancária
                                     @break
-                                @case('pix')
-                                    PIX
+                                @case('multicaixa')
+                                    Multicaixa Express
                                     @break
-                                @case('boleto')
-                                    Boleto Bancário
+                                @case('cash')
+                                    Pagamento em Dinheiro
                                     @break
                                 @default
                                     {{ $invoice->payment_method }}
@@ -183,7 +181,7 @@
                     
                     <div class="d-flex justify-content-between mb-3">
                         <span>Subtotal:</span>
-                        <span>R$ {{ number_format($invoice->total, 2, ',', '.') }}</span>
+                        <span>Kz {{ number_format($invoice->total, 2, ',', '.') }}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-3">
@@ -195,24 +193,18 @@
                     
                     <div class="d-flex justify-content-between mb-3 fw-bold">
                         <span>Total:</span>
-                        <span>R$ {{ number_format($invoice->total, 2, ',', '.') }}</span>
+                        <span>Kz {{ number_format($invoice->total, 2, ',', '.') }}</span>
                     </div>
                     
                     @if($invoice->status == 'pending')
                         <div class="d-grid gap-2">
-                            <form action="{{ route('customer.order.pay', $invoice->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-success w-100 mb-2" onclick="return confirm('Confirmar pagamento deste pedido?')">
-                                    <i class="fas fa-check-circle me-2"></i> Confirmar Pagamento
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#confirmPaymentModal">
+                                <i class="fas fa-check-circle me-2"></i> Confirmar Pagamento
+                            </button>
                             
-                            <form action="{{ route('customer.order.cancel', $invoice->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Tem certeza que deseja cancelar este pedido?')">
-                                    <i class="fas fa-times-circle me-2"></i> Cancelar Pedido
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                                <i class="fas fa-times-circle me-2"></i> Cancelar Pedido
+                            </button>
                         </div>
                     @endif
                 </div>
@@ -239,12 +231,99 @@
                 </div>
                 <div class="card-body">
                     <p>Se você tiver alguma dúvida sobre seu pedido, entre em contato conosco:</p>
-                    <p><i class="fas fa-envelope me-2"></i> atendimento@crm-livraria.com</p>
-                    <p><i class="fas fa-phone me-2"></i> (11) 1234-5678</p>
+                    <p><i class="fas fa-envelope me-2"></i> contato@livraria-crm.com</p>
+                    <p><i class="fas fa-phone me-2"></i> (+244) 923-456-789</p>
                     <a href="#" class="btn btn-outline-primary w-100">
                         <i class="fas fa-comment me-2"></i> Iniciar Chat
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Pagamento -->
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-labelledby="confirmPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <h5 class="modal-title" id="confirmPaymentModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Confirmar Pagamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-3">
+                    <i class="fas fa-money-bill-wave text-success" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-center mb-3">Você está prestes a confirmar o pagamento deste pedido.</p>
+                <div class="alert alert-info border-0">
+                    <strong>Pedido #{{ $invoice->id }}</strong><br>
+                    <strong>Valor:</strong> Kz {{ number_format($invoice->total, 2, ',', '.') }}<br>
+                    <strong>Método:</strong> 
+                    @switch($invoice->payment_method)
+                        @case('credit_card') Cartão de Crédito @break
+                        @case('debit_card') Cartão de Débito @break
+                        @case('bank_transfer') Transferência Bancária @break
+                        @case('multicaixa') Multicaixa Express @break
+                        @case('cash') Pagamento em Dinheiro @break
+                        @default {{ $invoice->payment_method }}
+                    @endswitch
+                </div>
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Após a confirmação, você receberá pontos de fidelidade e o status do pedido será atualizado.
+                </p>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <form action="{{ route('customer.order.pay', $invoice->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle me-2"></i>Confirmar Pagamento
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cancelamento de Pedido -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title" id="cancelOrderModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cancelar Pedido
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-3">
+                    <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-center mb-3"><strong>Tem certeza que deseja cancelar este pedido?</strong></p>
+                <div class="alert alert-warning border-0">
+                    <strong>Pedido #{{ $invoice->id }}</strong><br>
+                    <strong>Valor:</strong> Kz {{ number_format($invoice->total, 2, ',', '.') }}
+                </div>
+                <p class="text-danger small mb-0">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita. O pedido será cancelado permanentemente.
+                </p>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </button>
+                <form action="{{ route('customer.order.cancel', $invoice->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle me-2"></i>Sim, Cancelar Pedido
+                    </button>
+                </form>
             </div>
         </div>
     </div>

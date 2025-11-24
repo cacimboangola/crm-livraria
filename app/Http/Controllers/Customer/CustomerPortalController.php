@@ -180,7 +180,7 @@ class CustomerPortalController extends Controller
         // Calcular pontos de fidelidade (se a fatura estiver paga)
         $loyaltyPoints = 0;
         if ($invoice->status === 'paid') {
-            $loyaltyPoints = $this->loyaltyService->calculatePointsForInvoice($invoice);
+            $loyaltyPoints = $this->loyaltyService->calculatePointsForPurchase($invoice->total, $invoice->customer->loyaltyPoints->level ?? 'bronze');
         }
         
         return view('customer.order-details', compact('invoice', 'loyaltyPoints'));

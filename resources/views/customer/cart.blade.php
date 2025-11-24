@@ -31,7 +31,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($cart as $id => $item)
-                                        <tr>
+                                        <tr data-item-id="{{ $id }}">
                                             <td>
                                                 @if(isset($item['cover']) && $item['cover'])
                                                     <img src="{{ asset('storage/' . $item['cover']) }}" alt="{{ $item['title'] }}" class="img-thumbnail" style="max-height: 80px;">
@@ -42,18 +42,18 @@
                                             <td>
                                                 <h6 class="mb-0">{{ $item['title'] }}</h6>
                                             </td>
-                                            <td>R$ {{ number_format($item['price'], 2, ',', '.') }}</td>
+                                            <td class="item-price">Kz {{ number_format($item['price'], 2, ',', '.') }}</td>
                                             <td>
                                                 <form action="{{ route('customer.cart.update') }}" method="POST" class="d-flex">
                                                     @csrf
                                                     <input type="hidden" name="book_id" value="{{ $id }}">
-                                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control form-control-sm me-2" style="width: 70px;">
+                                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control form-control-sm me-2 quantity-input" data-price="{{ $item['price'] }}" style="width: 70px;">
                                                     <button type="submit" class="btn btn-sm btn-outline-primary">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                 </form>
                                             </td>
-                                            <td>R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}</td>
+                                            <td class="item-subtotal">Kz {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}</td>
                                             <td>
                                                 <form action="{{ route('customer.cart.remove') }}" method="POST">
                                                     @csrf
@@ -94,7 +94,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3">
                             <span>Subtotal:</span>
-                            <span>R$ {{ number_format($total, 2, ',', '.') }}</span>
+                            <span id="cart-subtotal">Kz {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span>Frete:</span>
@@ -103,7 +103,7 @@
                         <hr>
                         <div class="d-flex justify-content-between mb-3 fw-bold">
                             <span>Total:</span>
-                            <span>R$ {{ number_format($total, 2, ',', '.') }}</span>
+                            <span id="cart-total">Kz {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                         
                         <form action="{{ route('customer.checkout') }}" method="POST">
@@ -115,8 +115,8 @@
                                     <option value="credit_card">Cartão de Crédito</option>
                                     <option value="debit_card">Cartão de Débito</option>
                                     <option value="bank_transfer">Transferência Bancária</option>
-                                    <option value="pix">PIX</option>
-                                    <option value="boleto">Boleto Bancário</option>
+                                    <option value="multicaixa">Multicaixa Express</option>
+                                    <option value="cash">Pagamento em Dinheiro</option>
                                 </select>
                             </div>
                             
@@ -144,4 +144,57 @@
         </div>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualização dinâmica do subtotal quando a quantidade muda
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            updateSubtotal(this);
+            updateCartTotal();
+        });
+    });
+    
+    function updateSubtotal(input) {
+        const price = parseFloat(input.dataset.price);
+        const quantity = parseInt(input.value) || 1;
+        const subtotal = price * quantity;
+        
+        // Encontrar a linha da tabela
+        const row = input.closest('tr');
+        const subtotalCell = row.querySelector('.item-subtotal');
+        
+        // Atualizar o subtotal formatado
+        subtotalCell.textContent = 'Kz ' + formatCurrency(subtotal);
+    }
+    
+    function updateCartTotal() {
+        let total = 0;
+        
+        // Somar todos os subtotais
+        quantityInputs.forEach(input => {
+            const price = parseFloat(input.dataset.price);
+            const quantity = parseInt(input.value) || 1;
+            total += price * quantity;
+        });
+        
+        // Atualizar o total no resumo
+        const subtotalElement = document.getElementById('cart-subtotal');
+        const totalElement = document.getElementById('cart-total');
+        
+        if (subtotalElement) {
+            subtotalElement.textContent = 'Kz ' + formatCurrency(total);
+        }
+        if (totalElement) {
+            totalElement.textContent = 'Kz ' + formatCurrency(total);
+        }
+    }
+    
+    function formatCurrency(value) {
+        return value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+});
+</script>
 @endsection

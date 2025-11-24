@@ -24,7 +24,19 @@ class Customer extends Model
         'state',
         'postal_code',
         'tax_id',
+        'birth_date',
         'notes',
+        'active',
+    ];
+
+    /**
+     * Os atributos que devem ser convertidos para tipos nativos.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'active' => 'boolean',
+        'birth_date' => 'date',
     ];
 
     /**

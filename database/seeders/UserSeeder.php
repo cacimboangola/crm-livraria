@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -70,7 +70,7 @@ class UserSeeder extends Seeder
                     'phone' => $userData['phone'],
                     'active' => $userData['active'],
                 ]);
-                
+
                 $this->command->info("Usuário {$userData['role']} criado: {$userData['email']}");
             } else {
                 $this->command->info("Usuário {$userData['email']} já existe, pulando criação.");
