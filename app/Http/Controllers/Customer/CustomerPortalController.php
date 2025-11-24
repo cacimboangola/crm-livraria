@@ -73,11 +73,11 @@ class CustomerPortalController extends Controller
      */
     public function catalog(Request $request)
     {
-        $query = Book::query();
+        $query = Book::with('category');
         
         // Filtrar por categoria
         if ($request->has('category_id')) {
-            $query->where('book_category_id', $request->category_id);
+            $query->where('category_id', $request->category_id);
         }
         
         // Buscar por termo
@@ -116,7 +116,7 @@ class CustomerPortalController extends Controller
         }
         
         $books = $query->where('active', true)->paginate(12);
-        $categories = BookCategory::orderBy('name')->get();
+        $categories = BookCategory::where('active', true)->orderBy('name')->get();
         
         return view('customer.catalog', compact('books', 'categories'));
     }
@@ -133,7 +133,7 @@ class CustomerPortalController extends Controller
         }
         
         // Obter livros relacionados (mesma categoria)
-        $relatedBooks = Book::where('book_category_id', $book->book_category_id)
+        $relatedBooks = Book::where('category_id', $book->category_id)
                            ->where('id', '!=', $book->id)
                            ->where('active', true)
                            ->take(4)

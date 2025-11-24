@@ -159,23 +159,76 @@
             color: var(--text-light);
             padding: 3rem 0 1rem;
             margin-top: 4rem;
+            border-top: 3px solid var(--accent-color);
         }
 
         .footer-modern h5 {
-            color: var(--accent-color);
-            font-weight: 600;
+            color: white;
+            font-weight: 700;
             margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-modern p,
+        .footer-modern span {
+            color: rgba(236, 240, 241, 0.8);
+            line-height: 1.8;
         }
 
         .footer-modern a {
-            color: var(--text-muted);
+            color: rgba(236, 240, 241, 0.8);
             text-decoration: none;
             transition: var(--transition-normal);
+            display: inline-block;
         }
 
         .footer-modern a:hover {
             color: var(--accent-color);
             transform: translateX(4px);
+        }
+
+        .footer-modern .social-links a {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition-normal);
+        }
+
+        .footer-modern .social-links a:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-modern .contact-info i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .footer-modern .contact-info div {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .footer-modern .contact-info span {
+            flex: 1;
+        }
+
+        .footer-modern hr {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 2rem 0 1.5rem;
+        }
+
+        .footer-modern .copyright {
+            color: rgba(236, 240, 241, 0.6);
+            font-size: 0.9rem;
         }
 
         .alert-modern {
@@ -394,18 +447,22 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5><i class="fas fa-book-reader me-2"></i>Livraria CRM</h5>
-                    <p class="text-muted">Sua livraria online com os melhores títulos e preços. Descubra mundos incríveis através da leitura.</p>
-                    <div class="d-flex gap-3 mt-3">
-                        <a href="#" class="text-muted fs-5"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-muted fs-5"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-muted fs-5"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-muted fs-5"><i class="fab fa-youtube"></i></a>
+                    <p>Sua livraria online com os melhores títulos e preços. Descubra mundos incríveis através da leitura.</p>
+                    <div class="social-links d-flex gap-2 mt-3">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5><i class="fas fa-link me-2"></i>Links Úteis</h5>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="{{ route('customer.catalog') }}"><i class="fas fa-books me-2"></i>Catálogo</a></li>
+                        @auth
+                        <li class="mb-2"><a href="{{ route('customer.orders') }}"><i class="fas fa-receipt me-2"></i>Meus Pedidos</a></li>
+                        <li class="mb-2"><a href="{{ route('customer.loyalty') }}"><i class="fas fa-star me-2"></i>Programa de Fidelidade</a></li>
+                        @endauth
                         <li class="mb-2"><a href="#"><i class="fas fa-info-circle me-2"></i>Sobre Nós</a></li>
                         <li class="mb-2"><a href="#"><i class="fas fa-shield-alt me-2"></i>Política de Privacidade</a></li>
                         <li class="mb-2"><a href="#"><i class="fas fa-file-contract me-2"></i>Termos de Uso</a></li>
@@ -414,28 +471,28 @@
                 <div class="col-md-4 mb-4">
                     <h5><i class="fas fa-phone me-2"></i>Contato</h5>
                     <div class="contact-info">
-                        <div class="mb-2">
+                        <div>
                             <i class="fas fa-map-marker-alt me-2"></i>
                             <span>Rua dos Livros, 123<br>Luanda, Angola</span>
                         </div>
-                        <div class="mb-2">
+                        <div>
                             <i class="fas fa-phone me-2"></i>
                             <span>(+244) 923-456-789</span>
                         </div>
-                        <div class="mb-2">
+                        <div>
                             <i class="fas fa-envelope me-2"></i>
                             <span>contato@livraria-crm.com</span>
                         </div>
-                        <div class="mb-2">
+                        <div>
                             <i class="fas fa-clock me-2"></i>
                             <span>Seg-Sex: 8h-18h</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <hr class="border-secondary">
+            <hr>
             <div class="text-center">
-                <p class="mb-0 text-muted">&copy; {{ date('Y') }} Livraria CRM. Todos os direitos reservados. Desenvolvido com dedicação em Angola.</p>
+                <p class="mb-0 copyright">&copy; {{ date('Y') }} Livraria CRM. Todos os direitos reservados. Desenvolvido com <i class="fas fa-heart text-danger"></i> em Angola.</p>
             </div>
         </div>
     </footer>

@@ -122,7 +122,7 @@ class BookService
      */
     public function getByCategory(int $categoryId, int $perPage = 10): LengthAwarePaginator
     {
-        return Book::where('book_category_id', $categoryId)
+        return Book::where('category_id', $categoryId)
             ->with('category')
             ->orderBy('title')
             ->paginate($perPage);

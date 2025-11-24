@@ -44,12 +44,12 @@
             <div class="mb-4">
                 @if($book->discount > 0)
                     <p class="mb-1">
-                        <span class="text-decoration-line-through text-muted fs-4">R$ {{ number_format($book->price, 2, ',', '.') }}</span>
-                        <span class="text-danger fw-bold fs-2">R$ {{ number_format($book->price * (1 - $book->discount/100), 2, ',', '.') }}</span>
+                        <span class="text-decoration-line-through text-muted fs-4">Kz {{ number_format($book->price, 2, ',', '.') }}</span>
+                        <span class="text-danger fw-bold fs-2">Kz {{ number_format($book->price * (1 - $book->discount/100), 2, ',', '.') }}</span>
                     </p>
-                    <p class="text-success">Você economiza: R$ {{ number_format($book->price * ($book->discount/100), 2, ',', '.') }}</p>
+                    <p class="text-success">Você economiza: Kz {{ number_format($book->price * ($book->discount/100), 2, ',', '.') }}</p>
                 @else
-                    <p class="mb-1 fw-bold fs-2">R$ {{ number_format($book->price, 2, ',', '.') }}</p>
+                    <p class="mb-1 fw-bold fs-2">Kz {{ number_format($book->price, 2, ',', '.') }}</p>
                 @endif
             </div>
             
@@ -147,11 +147,11 @@
                                 <div class="mt-auto">
                                     @if($relatedBook->discount > 0)
                                         <p class="mb-1">
-                                            <span class="text-decoration-line-through text-muted">R$ {{ number_format($relatedBook->price, 2, ',', '.') }}</span>
-                                            <span class="text-danger fw-bold">R$ {{ number_format($relatedBook->price * (1 - $relatedBook->discount/100), 2, ',', '.') }}</span>
+                                            <span class="text-decoration-line-through text-muted">Kz {{ number_format($relatedBook->price, 2, ',', '.') }}</span>
+                                            <span class="text-danger fw-bold">Kz {{ number_format($relatedBook->price * (1 - $relatedBook->discount/100), 2, ',', '.') }}</span>
                                         </p>
                                     @else
-                                        <p class="mb-1 fw-bold">R$ {{ number_format($relatedBook->price, 2, ',', '.') }}</p>
+                                        <p class="mb-1 fw-bold">Kz {{ number_format($relatedBook->price, 2, ',', '.') }}</p>
                                     @endif
                                     
                                     <div class="d-flex justify-content-between">

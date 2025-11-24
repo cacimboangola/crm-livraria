@@ -79,10 +79,10 @@ class CustomerPortalController extends Controller
         $categories = $this->bookCategoryService->getAllCategories();
         $category_id = $request->input('category_id');
         
-        $booksQuery = Book::query();
+        $booksQuery = Book::with('category');
         
         if ($category_id) {
-            $booksQuery->where('book_category_id', $category_id);
+            $booksQuery->where('category_id', $category_id);
         }
         
         if ($request->has('search')) {
@@ -94,7 +94,7 @@ class CustomerPortalController extends Controller
             });
         }
         
-        $books = $booksQuery->paginate(12);
+        $books = $booksQuery->where('active', true)->paginate(12);
         
         return view('customer.catalog', compact('books', 'categories', 'category_id'));
     }
