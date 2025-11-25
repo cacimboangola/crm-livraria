@@ -457,10 +457,167 @@ Para dúvidas sobre a API:
 - Abra uma issue no repositório
 - Entre em contato com o suporte técnico
 
+### Rastreamento de Campanhas
+
+#### GET /track/open/{campaign_id}/{customer_id}/{token}
+
+Rastreia abertura de email de campanha.
+
+**Parâmetros:**
+- `campaign_id`: ID da campanha
+- `customer_id`: ID do cliente
+- `token`: Token de segurança
+
+**Response:** Pixel transparente 1x1 (GIF)
+
+#### GET /track/click/{campaign_id}/{customer_id}/{token}
+
+Rastreia clique em link de campanha.
+
+**Parâmetros:**
+- `campaign_id`: ID da campanha
+- `customer_id`: ID do cliente  
+- `token`: Token de segurança
+- `url`: URL de destino (query parameter)
+
+**Response:** Redirecionamento para URL original
+
+#### POST /track/conversion/{campaign_id}/{customer_id}/{token}
+
+Registra conversão de campanha.
+
+**Request:**
+```json
+{
+  "revenue": 150.00,
+  "order_id": "12345"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Conversão registrada com sucesso"
+}
+```
+
+### Pedidos Especiais
+
+#### GET /special-orders
+
+Lista pedidos especiais (requer autenticação admin).
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "book_title": "Dom Quixote",
+      "book_author": "Miguel de Cervantes",
+      "customer": {
+        "id": 1,
+        "name": "João Silva",
+        "email": "joao@email.com"
+      },
+      "status": "pending",
+      "created_at": "2025-11-25T10:00:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "total": 10
+  }
+}
+```
+
+#### POST /special-orders
+
+Cria novo pedido especial (requer autenticação admin).
+
+**Request:**
+```json
+{
+  "customer_id": 1,
+  "book_title": "Dom Quixote",
+  "book_author": "Miguel de Cervantes",
+  "book_isbn": "978-85-359-0277-8",
+  "quantity": 1,
+  "delivery_preference": "pickup",
+  "customer_notes": "Edição especial se possível"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "book_title": "Dom Quixote",
+  "status": "pending",
+  "created_at": "2025-11-25T10:00:00Z"
+}
+```
+
+#### PATCH /special-orders/{id}/advance-status
+
+Avança status do pedido especial.
+
+**Response:**
+```json
+{
+  "id": 1,
+  "status": "ordered",
+  "status_formatted": "Encomendado ao Fornecedor",
+  "updated_at": "2025-11-25T10:30:00Z"
+}
+```
+
+## Webhooks
+
+### Campaign Conversion Webhook
+
+Configure um webhook para receber notificações de conversões:
+
+```http
+POST https://seu-site.com/webhook/campaign-conversion
+Content-Type: application/json
+
+{
+  "campaign_id": 1,
+  "customer_id": 1,
+  "revenue": 150.00,
+  "order_id": "12345",
+  "timestamp": "2025-11-25T10:00:00Z"
+}
+```
+
+### Special Order Status Webhook
+
+Receba notificações quando status de pedido especial mudar:
+
+```http
+POST https://seu-site.com/webhook/special-order-status
+Content-Type: application/json
+
+{
+  "special_order_id": 1,
+  "old_status": "pending",
+  "new_status": "ordered",
+  "customer_id": 1,
+  "timestamp": "2025-11-25T10:00:00Z"
+}
+```
+
 ## Changelog
+
+### v2.0.0 (2025-11-25)
+- ✅ Adicionados endpoints de rastreamento de campanhas
+- ✅ Adicionados endpoints de pedidos especiais
+- ✅ Implementados webhooks para conversões
+- ✅ Melhorada segurança com tokens
 
 ### v1.0.0 (2025-01-20)
 - Lançamento inicial da API
 - Endpoint de chatbot
-- Endpoints de rastreamento de campanhas
-- Endpoints de notificações
+- Endpoints básicos de notificações

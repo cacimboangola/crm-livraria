@@ -115,7 +115,7 @@
                 }}
             </span>
         </p>
-        <p><strong>Valor Total:</strong> R$ {{ number_format($invoice->total, 2, ',', '.') }}</p>
+        <p><strong>Valor Total:</strong> Kz {{ number_format($invoice->total, 2, ',', '.') }}</p>
     </div>
     
     <h3>Itens da Fatura</h3>
@@ -133,8 +133,8 @@
                 <tr>
                     <td>{{ $item->book->title }}</td>
                     <td>{{ $item->quantity }}</td>
-                    <td>R$ {{ number_format($item->unit_price, 2, ',', '.') }}</td>
-                    <td>R$ {{ number_format($item->quantity * $item->unit_price, 2, ',', '.') }}</td>
+                    <td>Kz {{ number_format($item->unit_price, 2, ',', '.') }}</td>
+                    <td>Kz {{ number_format($item->quantity * $item->unit_price, 2, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

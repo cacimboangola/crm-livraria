@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
+use App\Models\Coupon;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -62,7 +64,25 @@ class CartController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
         
-        return view('customer.cart', compact('cart', 'total'));
+        // Dados do cupom aplicado
+        $couponData = Session::get('coupon');
+        $discount = 0;
+        $coupon = null;
+        
+        if ($couponData) {
+            $coupon = Coupon::find($couponData['id']);
+            if ($coupon && $coupon->isValid()) {
+                $discount = $coupon->calculateDiscount($total);
+            } else {
+                // Cupom inválido, remover da sessão
+                Session::forget('coupon');
+                $couponData = null;
+            }
+        }
+        
+        $finalTotal = $total - $discount;
+        
+        return view('customer.cart', compact('cart', 'total', 'discount', 'finalTotal', 'couponData'));
     }
     
     /**
@@ -115,5 +135,66 @@ class CartController extends Controller
         }
         
         return redirect()->route('customer.cart')->with('success', 'Item removido do carrinho!');
+    }
+
+    /**
+     * Aplica um cupom de desconto ao carrinho
+     */
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string|max:50',
+        ]);
+
+        $code = strtoupper(trim($request->coupon_code));
+        $coupon = Coupon::where('code', $code)->first();
+
+        if (!$coupon) {
+            return back()->with('coupon_error', 'Cupom não encontrado.');
+        }
+
+        if (!$coupon->isValid()) {
+            return back()->with('coupon_error', 'Este cupom não está mais válido.');
+        }
+
+        // Verificar se o cliente pode usar o cupom
+        $user = auth()->user();
+        if ($user && $user->customer) {
+            if (!$coupon->canBeUsedByCustomer($user->customer)) {
+                return back()->with('coupon_error', 'Você já atingiu o limite de uso deste cupom.');
+            }
+        }
+
+        // Calcular o total do carrinho
+        $cart = Session::get('cart', []);
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        // Verificar valor mínimo
+        if ($coupon->min_order_value && $total < $coupon->min_order_value) {
+            return back()->with('coupon_error', 'Valor mínimo do pedido: Kz ' . number_format($coupon->min_order_value, 2, ',', '.'));
+        }
+
+        // Salvar cupom na sessão
+        Session::put('coupon', [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'name' => $coupon->name,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+        ]);
+
+        return back()->with('coupon_success', 'Cupom aplicado com sucesso!');
+    }
+
+    /**
+     * Remove o cupom aplicado
+     */
+    public function removeCoupon()
+    {
+        Session::forget('coupon');
+        return back()->with('success', 'Cupom removido.');
     }
 }

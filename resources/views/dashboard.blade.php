@@ -61,7 +61,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="card-subtitle mb-2">Total de Vendas</h6>
-                            <h2 class="card-title mb-0">R$ {{ number_format($totalVendas ?? \App\Models\Invoice::where('status', 'paid')->sum('total'), 2, ',', '.') }}</h2>
+                            <h2 class="card-title mb-0">Kz {{ number_format($totalVendas ?? \App\Models\Invoice::where('status', 'paid')->sum('total'), 2, ',', '.') }}</h2>
                         </div>
                         <div class="fs-1">
                             <i class="bi bi-cash-coin"></i>

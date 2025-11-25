@@ -11,6 +11,8 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CampaignTrackingController;
 use App\Http\Controllers\LoyaltyController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\SpecialOrderController;
 
 // Rota pública inicial
 Route::get('/', function () {
@@ -112,6 +114,16 @@ Route::middleware(['auth'])->group(function () {
         // Rotas para administração do sistema de fidelidade
         Route::get('/loyalty/admin', [LoyaltyController::class, 'adminDashboard'])->name('loyalty.admin');
         Route::post('/loyalty/expiration', [LoyaltyController::class, 'processExpiration'])->name('loyalty.process-expiration');
+        
+        // Rotas para cupons de desconto
+        Route::resource('coupons', CouponController::class);
+        Route::patch('/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
+        Route::get('/coupons-generate-code', [CouponController::class, 'generateCode'])->name('coupons.generate-code');
+        
+        // Rotas para pedidos especiais
+        Route::resource('special-orders', SpecialOrderController::class);
+        Route::patch('/special-orders/{special_order}/advance-status', [SpecialOrderController::class, 'advanceStatus'])->name('special-orders.advance-status');
+        Route::patch('/special-orders/{special_order}/cancel', [SpecialOrderController::class, 'cancel'])->name('special-orders.cancel');
     });
     
     // Rotas para o sistema de fidelidade (acessível a todos usuários autenticados)
@@ -148,6 +160,8 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->pre
     Route::get('/carrinho', [\App\Http\Controllers\Customer\CartController::class, 'show'])->name('customer.cart');
     Route::post('/carrinho/atualizar', [\App\Http\Controllers\Customer\CartController::class, 'update'])->name('customer.cart.update');
     Route::post('/carrinho/remover', [\App\Http\Controllers\Customer\CartController::class, 'remove'])->name('customer.cart.remove');
+    Route::post('/carrinho/cupom', [\App\Http\Controllers\Customer\CartController::class, 'applyCoupon'])->name('customer.cart.apply-coupon');
+    Route::delete('/carrinho/cupom', [\App\Http\Controllers\Customer\CartController::class, 'removeCoupon'])->name('customer.cart.remove-coupon');
     
     // Rotas de checkout
     Route::post('/checkout', [\App\Http\Controllers\Customer\CheckoutController::class, 'process'])->name('customer.checkout');

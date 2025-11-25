@@ -679,6 +679,122 @@ Utiliza processamento de linguagem natural simples com palavras-chave e resposta
 
 ---
 
+## 7. Módulo de Pedidos Especiais
+
+### Descrição
+Sistema para gerenciar pedidos de livros que não estão em estoque, permitindo que funcionários registrem solicitações de clientes e acompanhem todo o processo até a entrega.
+
+### Funcionalidades
+
+#### 7.1 Gestão de Pedidos Especiais
+- **Criar**: Registro de novos pedidos especiais
+- **Acompanhar**: Timeline de status do pedido
+- **Notificar**: Alertas automáticos para funcionários e clientes
+- **Finalizar**: Controle de entrega e conclusão
+
+#### 7.2 Status do Pedido
+- **Pending**: Aguardando encomenda ao fornecedor
+- **Ordered**: Encomendado ao fornecedor
+- **Received**: Recebido na loja
+- **Notified**: Cliente notificado
+- **Delivered**: Entregue ao cliente
+- **Cancelled**: Cancelado
+
+#### 7.3 Notificações Automáticas
+- Email para cliente quando livro chegar
+- Notificações internas para funcionários
+- Timeline visual do progresso
+
+### Rotas
+
+```php
+Route::resource('special-orders', SpecialOrderController::class);
+Route::patch('/special-orders/{special_order}/advance-status', [SpecialOrderController::class, 'advanceStatus']);
+Route::patch('/special-orders/{special_order}/cancel', [SpecialOrderController::class, 'cancel']);
+```
+
+### Model: SpecialOrder
+
+```php
+// Relacionamentos
+belongsTo(Customer::class)
+belongsTo(User::class) // Funcionário que criou
+
+// Scopes
+scopePending($query)
+scopeActive($query)
+scopeNeedsAction($query)
+
+// Métodos
+canBeCancelled(): bool
+canAdvanceStatus(): bool
+getStatusFormattedAttribute(): string
+getNextStatusAttribute(): string
+```
+
+### Service: SpecialOrderService
+
+```php
+// Métodos principais
+create(array $data): SpecialOrder
+advanceStatus(SpecialOrder $order): SpecialOrder
+notifyCustomer(SpecialOrder $order): void
+notifyAdmins(SpecialOrder $order, string $type): void
+getMetrics(): array
+```
+
+### Fluxo de Trabalho
+
+```
+Cliente solicita livro fora de estoque
+         ↓
+Funcionário cria pedido especial
+         ↓
+Sistema notifica administradores
+         ↓
+Funcionário encomenda ao fornecedor
+         ↓
+Status atualizado para "Ordered"
+         ↓
+Livro chega na loja
+         ↓
+Status atualizado para "Received"
+         ↓
+Sistema notifica cliente por email
+         ↓
+Cliente retira/recebe o livro
+         ↓
+Status atualizado para "Delivered"
+```
+
+### Campos do Formulário
+
+```php
+// Dados do livro
+'book_title' => 'required|string|max:255'
+'book_author' => 'nullable|string|max:255'
+'book_isbn' => 'nullable|string|max:20'
+'book_publisher' => 'nullable|string|max:255'
+'quantity' => 'required|integer|min:1'
+'estimated_price' => 'nullable|numeric|min:0'
+
+// Dados do pedido
+'customer_id' => 'required|exists:customers,id'
+'delivery_preference' => 'required|in:pickup,delivery'
+'customer_notes' => 'nullable|string'
+'supplier_notes' => 'nullable|string'
+```
+
+### Métricas e Relatórios
+
+- Total de pedidos especiais por período
+- Tempo médio de atendimento
+- Taxa de conversão (pedidos concluídos)
+- Livros mais solicitados
+- Fornecedores mais utilizados
+
+---
+
 ## Integrações Entre Módulos
 
 ### Fatura → Fidelidade
@@ -689,6 +805,12 @@ Ao criar fatura, estoque é automaticamente decrementado.
 
 ### Campanha → Fidelidade
 Ao distribuir pontos de campanha, transações são criadas.
+
+### Pedidos Especiais → Notificações
+Ao avançar status do pedido, notificações são enviadas automaticamente.
+
+### Pedidos Especiais → Clientes
+Pedidos especiais são vinculados a clientes específicos.
 
 ### Recomendações → Vendas
 Recomendações baseadas em histórico de faturas.

@@ -539,6 +539,38 @@ Sempre incluir `@csrf` em formulários:
 </form>
 ```
 
+## Funcionalidades Recentes
+
+### Campanhas de Marketing
+Sistema completo de email marketing com:
+- **Rastreamento avançado** - Abertura, cliques e conversões
+- **Segmentação automática** - Por critérios de comportamento
+- **Templates responsivos** - HTML otimizado para email
+- **Integração com fidelidade** - Distribuição de pontos
+
+### Pedidos Especiais
+Gestão de livros fora de estoque:
+- **Timeline de status** - Acompanhamento visual do progresso
+- **Notificações automáticas** - Emails para clientes e funcionários
+- **Workflow completo** - Da solicitação à entrega
+- **Métricas de performance** - Tempo de atendimento e conversão
+
+### Arquitetura das Novas Funcionalidades
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Campaign      │    │  SpecialOrder   │    │  Notification   │
+│   System        │    │   System        │    │   System        │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────────────────┼──────────────────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │     Service Layer       │
+                    │   (Orchestration)       │
+                    └─────────────────────────┘
+```
+
 ## Conclusão
 
 Esta arquitetura promove:
@@ -547,5 +579,6 @@ Esta arquitetura promove:
 - **Escalabilidade**
 - **Reutilização de código**
 - **Facilidade de manutenção**
+- **Integração entre módulos**
 
 Ao adicionar novas funcionalidades, sempre siga estes padrões para manter a consistência e qualidade do código.

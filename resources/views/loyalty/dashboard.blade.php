@@ -149,7 +149,7 @@
                                         <div class="card-header bg-dark text-white">Bronze</div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
-                                                <li><i class="bi bi-check-circle-fill text-success"></i> 1 ponto por R$ 1</li>
+                                                <li><i class="bi bi-check-circle-fill text-success"></i> 1 ponto por Kz 1</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Acesso a ofertas exclusivas</li>
                                             </ul>
                                         </div>
@@ -160,9 +160,9 @@
                                         <div class="card-header bg-secondary text-white">Silver</div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
-                                                <li><i class="bi bi-check-circle-fill text-success"></i> 1,5 pontos por R$ 1</li>
+                                                <li><i class="bi bi-check-circle-fill text-success"></i> 1,5 pontos por Kz 1</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Todos os benefícios Bronze</li>
-                                                <li><i class="bi bi-check-circle-fill text-success"></i> Frete grátis em compras acima de R$ 100</li>
+                                                <li><i class="bi bi-check-circle-fill text-success"></i> Frete grátis em compras acima de Kz 100</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -172,7 +172,7 @@
                                         <div class="card-header bg-warning">Gold</div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
-                                                <li><i class="bi bi-check-circle-fill text-success"></i> 2 pontos por R$ 1</li>
+                                                <li><i class="bi bi-check-circle-fill text-success"></i> 2 pontos por Kz 1</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Todos os benefícios Silver</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Frete grátis em todas as compras</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Acesso antecipado a lançamentos</li>
@@ -185,7 +185,7 @@
                                         <div class="card-header bg-primary text-white">Platinum</div>
                                         <div class="card-body">
                                             <ul class="list-unstyled">
-                                                <li><i class="bi bi-check-circle-fill text-success"></i> 2,5 pontos por R$ 1</li>
+                                                <li><i class="bi bi-check-circle-fill text-success"></i> 2,5 pontos por Kz 1</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Todos os benefícios Gold</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Atendimento prioritário</li>
                                                 <li><i class="bi bi-check-circle-fill text-success"></i> Eventos exclusivos</li>

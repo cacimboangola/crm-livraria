@@ -10,6 +10,8 @@ Bem-vindo ao Manual do Usuário do CRM Livraria! Este guia irá ajudá-lo a util
 2. [Acesso ao Sistema](#acesso-ao-sistema)
 3. [Guia para Clientes](#guia-para-clientes)
 4. [Guia para Administradores](#guia-para-administradores)
+   - [Campanhas de Marketing](#7-campanhas-de-marketing)
+   - [Pedidos Especiais](#8-pedidos-especiais)
 5. [Perguntas Frequentes](#perguntas-frequentes)
 6. [Suporte](#suporte)
 
@@ -22,7 +24,9 @@ O CRM Livraria é um sistema completo de gestão para livrarias que permite:
 - 📚 **Navegar e comprar livros** online
 - 🎁 **Acumular pontos de fidelidade** em suas compras
 - 📊 **Gerenciar vendas e clientes** (para administradores)
-- 📧 **Receber notificações** sobre promoções e novidades
+- 📧 **Criar campanhas de marketing** com rastreamento avançado
+- 📦 **Gerenciar pedidos especiais** de livros fora de estoque
+- 🔔 **Receber notificações** sobre promoções e novidades
 - 💬 **Interagir com chatbot** para suporte
 
 ---
@@ -462,6 +466,122 @@ O CRM Livraria é um sistema completo de gestão para livrarias que permite:
    - Taxas de conversão
    - Engajamento
 
+### 7. Campanhas de Marketing
+
+#### Criar Nova Campanha
+
+1. **Acesse "Campanhas"** no menu lateral
+2. **Clique em "Nova Campanha"**
+3. **Preencha os dados básicos**:
+   - Nome da campanha
+   - Tipo (Email)
+   - Descrição
+   - Data de início e fim
+4. **Crie o conteúdo HTML**:
+   - Use o editor para criar o email
+   - Adicione imagens e links
+   - Personalize com variáveis do cliente
+5. **Clique em "Salvar"**
+
+#### Segmentar Clientes
+
+1. **Na campanha criada**, clique em "Adicionar Clientes"
+2. **Escolha o método**:
+   - **Manual**: Selecione clientes individualmente
+   - **Automático**: Configure critérios de filtro
+3. **Para seleção automática**, configure:
+   - Número mínimo de compras
+   - Valor total gasto
+   - Categorias preferidas
+   - Dias desde última compra
+4. **Clique em "Aplicar Filtros"**
+
+#### Enviar Campanha
+
+1. **Revise a lista de clientes** selecionados
+2. **Clique em "Ativar Campanha"**
+3. **Clique em "Enviar Emails"**
+4. **Acompanhe o progresso** do envio
+
+#### Acompanhar Métricas
+
+1. **Acesse a campanha** enviada
+2. **Visualize as métricas**:
+   - Emails enviados
+   - Taxa de abertura
+   - Taxa de clique
+   - Conversões
+3. **Clique em "Ver Métricas Detalhadas"** para relatório completo
+
+#### Distribuir Pontos de Fidelidade
+
+1. **Na campanha**, vá para "Programa de Fidelidade"
+2. **Configure**:
+   - Quantidade de pontos
+   - Descrição da distribuição
+3. **Clique em "Distribuir Pontos"**
+4. **Confirme a ação**
+
+### 8. Pedidos Especiais
+
+#### Criar Pedido Especial
+
+1. **Acesse "Pedidos Especiais"** no menu lateral
+2. **Clique em "Novo Pedido Especial"**
+3. **Selecione o cliente** da lista
+4. **Preencha dados do livro**:
+   - Título (obrigatório)
+   - Autor
+   - ISBN
+   - Editora
+   - Quantidade
+   - Preço estimado
+5. **Configure entrega**:
+   - Retirada na loja
+   - Entrega em domicílio
+6. **Adicione observações** do cliente
+7. **Clique em "Criar Pedido"**
+
+#### Acompanhar Status do Pedido
+
+1. **Na lista de pedidos especiais**, clique no pedido
+2. **Visualize a timeline** de status:
+   - ⏳ Aguardando Encomenda
+   - 📦 Encomendado ao Fornecedor
+   - ✅ Recebido na Loja
+   - 📧 Cliente Notificado
+   - 🎉 Entregue
+3. **Veja detalhes** do livro e cliente
+
+#### Avançar Status do Pedido
+
+1. **Nos detalhes do pedido**, use os botões de ação:
+   - "Marcar como Encomendado"
+   - "Marcar como Recebido"
+   - "Notificar Cliente"
+   - "Marcar como Entregue"
+2. **Adicione notas do fornecedor** se necessário
+3. **O sistema enviará notificações** automaticamente
+
+#### Cancelar Pedido
+
+1. **Nos detalhes do pedido**, clique em "Cancelar Pedido"
+2. **Confirme o cancelamento**
+3. **O cliente será notificado** automaticamente
+
+#### Relatórios de Pedidos Especiais
+
+1. **Na página principal** de pedidos especiais
+2. **Visualize cards de resumo**:
+   - Aguardando encomenda
+   - Encomendados
+   - Recebidos na loja
+   - Total ativos
+3. **Use filtros** para análise específica:
+   - Por status
+   - Por período
+   - Por cliente
+
 ---
 
 ## ❓ Perguntas Frequentes
@@ -573,8 +693,8 @@ O sistema é totalmente responsivo e pode ser acessado de qualquer dispositivo:
 Este manual é atualizado regularmente. Verifique a data da última atualização abaixo.
 
 **Última atualização**: Novembro 2025  
-**Versão do Manual**: 1.0.0  
-**Versão do Sistema**: 1.0.0
+**Versão do Manual**: 2.0.0  
+**Versão do Sistema**: 2.0.0
 
 ---
 
@@ -582,7 +702,13 @@ Este manual é atualizado regularmente. Verifique a data da última atualizaçã
 
 - **Fatura**: Documento que registra uma venda
 - **Pontos de Fidelidade**: Recompensas por compras
-- **Campanha**: Ação de marketing para clientes
+- **Campanha**: Ação de marketing por email para clientes
+- **Pedido Especial**: Solicitação de livro fora de estoque
+- **Taxa de Abertura**: Percentual de emails abertos
+- **Taxa de Clique**: Percentual de links clicados em emails
+- **Conversão**: Compra realizada após campanha
+- **Segmentação**: Filtro de clientes por critérios
+- **Timeline**: Histórico visual de status
 - **Estoque**: Quantidade disponível de um livro
 - **NIF**: Número de Identificação Fiscal
 - **ROI**: Retorno sobre Investimento

@@ -15,6 +15,9 @@
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -165,6 +168,16 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('campaigns.*') ? 'active' : '' }}" href="{{ route('campaigns.index') }}">
                                     <i class="bi bi-megaphone"></i> Campanhas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}" href="{{ route('coupons.index') }}">
+                                    <i class="bi bi-ticket-perforated"></i> Cupons
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('special-orders.*') ? 'active' : '' }}" href="{{ route('special-orders.index') }}">
+                                    <i class="bi bi-box-seam"></i> Pedidos Especiais
                                 </a>
                             </li>
                             @endif

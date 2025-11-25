@@ -179,7 +179,7 @@ class CampaignController extends Controller
                 ->with('error', 'Campanha não encontrada.');
         }
         
-        $customers = $this->customerService->getAllCustomers();
+        $customers = $this->customerService->getAll();
         
         return view('campaigns.select-customers', compact('campaign', 'customers'));
     }

@@ -97,8 +97,8 @@
                                                 <div class="card h-100">
                                                     <div class="card-header bg-primary text-white">Desconto em Compra</div>
                                                     <div class="card-body">
-                                                        <p>100 pontos = R$ 10 de desconto</p>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary redemption-option" data-points="100" data-description="Desconto de R$ 10 em compra">
+                                                        <p>100 pontos = Kz 10 de desconto</p>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary redemption-option" data-points="100" data-description="Desconto de Kz 10 em compra">
                                                             Resgatar 100 pontos
                                                         </button>
                                                     </div>

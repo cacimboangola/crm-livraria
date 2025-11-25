@@ -73,7 +73,7 @@
                                                     <td>{{ $customer->email }}</td>
                                                     <td>{{ $customer->phone }}</td>
                                                     <td>{{ $customer->invoices_count ?? $customer->invoices->count() }}</td>
-                                                    <td>R$ {{ number_format($customer->total_spent ?? $customer->invoices->sum('total'), 2, ',', '.') }}</td>
+                                                    <td>Kz {{ number_format($customer->total_spent ?? $customer->invoices->sum('total'), 2, ',', '.') }}</td>
                                                 </tr>
                                             @endif
                                         @empty

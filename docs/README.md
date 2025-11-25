@@ -28,7 +28,8 @@ Bem-vindo à documentação completa do CRM Livraria! Este índice irá guiá-lo
   - Catálogo de Livros
   - Sistema de Vendas (Faturas)
   - Programa de Fidelidade
-  - Campanhas de Marketing
+  - **[Campanhas de Marketing](CAMPAIGNS.md)** - Sistema completo de email marketing
+  - Pedidos Especiais
   - Sistema de Recomendações
   - Notificações
   - Portal do Cliente
@@ -125,7 +126,8 @@ Bem-vindo à documentação completa do CRM Livraria! Este índice irá guiá-lo
 
 - **Autenticação**: [ARCHITECTURE.md](ARCHITECTURE.md#autenticação-e-autorização)
 - **Fidelidade**: [MODULES.md](MODULES.md#4-módulo-de-fidelidade)
-- **Campanhas**: [MODULES.md](MODULES.md#5-módulo-de-campanhas)
+- **Campanhas**: [CAMPAIGNS.md](CAMPAIGNS.md) - Documentação completa
+- **Pedidos Especiais**: [MODULES.md](MODULES.md#pedidos-especiais)
 - **Faturas**: [MODULES.md](MODULES.md#3-módulo-de-vendas-faturas)
 - **API**: [API.md](API.md)
 - **Deploy**: [DEPLOYMENT.md](DEPLOYMENT.md)
@@ -317,6 +319,6 @@ Obrigado a todos os contribuidores que ajudaram a tornar este projeto melhor!
 
 ---
 
-**Última atualização**: Janeiro 2025
+**Última atualização**: Novembro 2025
 
-**Versão da Documentação**: 1.0.0
+**Versão da Documentação**: 2.0.0

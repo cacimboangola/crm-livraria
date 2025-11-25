@@ -172,7 +172,7 @@
                         <div class="mb-3">
                             <label for="discount" class="form-label">Desconto</label>
                             <div class="input-group">
-                                <span class="input-group-text">R$</span>
+                                <span class="input-group-text">Kz</span>
                                 <input type="number" class="form-control @error('discount') is-invalid @enderror" id="discount" name="discount" value="{{ old('discount', $invoice->discount) }}" step="0.01" min="0">
                                 @error('discount')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -183,7 +183,7 @@
                         <div class="mb-3">
                             <label for="tax" class="form-label">Impostos</label>
                             <div class="input-group">
-                                <span class="input-group-text">R$</span>
+                                <span class="input-group-text">Kz</span>
                                 <input type="number" class="form-control @error('tax') is-invalid @enderror" id="tax" name="tax" value="{{ old('tax', $invoice->tax) }}" step="0.01" min="0">
                                 @error('tax')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -230,13 +230,13 @@
             </td>
             <td>
                 <div class="input-group">
-                    <span class="input-group-text">R$</span>
+                    <span class="input-group-text">Kz</span>
                     <input type="number" class="form-control price-input" name="items[INDEX][unit_price]" value="0.00" step="0.01" min="0" required>
                 </div>
             </td>
             <td>
                 <div class="input-group">
-                    <span class="input-group-text">R$</span>
+                    <span class="input-group-text">Kz</span>
                     <input type="text" class="form-control item-total" value="0.00" readonly>
                 </div>
             </td>

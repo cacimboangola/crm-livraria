@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="target_criteria[min_total_spent]" class="form-label">{{ __('Valor Mínimo Gasto (R$)') }}</label>
+                                                <label for="target_criteria[min_total_spent]" class="form-label">{{ __('Valor Mínimo Gasto (Kz)') }}</label>
                                                 <input type="number" class="form-control" id="target_criteria_min_total_spent" name="target_criteria[min_total_spent]" value="{{ old('target_criteria.min_total_spent') }}" min="0" step="0.01">
                                             </div>
                                         </div>

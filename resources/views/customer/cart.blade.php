@@ -96,6 +96,14 @@
                             <span>Subtotal:</span>
                             <span id="cart-subtotal">Kz {{ number_format($total, 2, ',', '.') }}</span>
                         </div>
+                        @if(isset($discount) && $discount > 0)
+                        <div class="d-flex justify-content-between mb-3 text-success">
+                            <span>
+                                <i class="fas fa-tag me-1"></i> Desconto ({{ $couponData['code'] }}):
+                            </span>
+                            <span>- Kz {{ number_format($discount, 2, ',', '.') }}</span>
+                        </div>
+                        @endif
                         <div class="d-flex justify-content-between mb-3">
                             <span>Frete:</span>
                             <span>Grátis</span>
@@ -103,7 +111,7 @@
                         <hr>
                         <div class="d-flex justify-content-between mb-3 fw-bold">
                             <span>Total:</span>
-                            <span id="cart-total">Kz {{ number_format($total, 2, ',', '.') }}</span>
+                            <span id="cart-total">Kz {{ number_format($finalTotal ?? $total, 2, ',', '.') }}</span>
                         </div>
                         
                         <form action="{{ route('customer.checkout') }}" method="POST">
@@ -132,12 +140,42 @@
                         <h5 class="mb-0">Cupom de Desconto</h5>
                     </div>
                     <div class="card-body">
-                        <form action="#" method="POST">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Digite o código">
-                                <button class="btn btn-outline-primary" type="submit">Aplicar</button>
+                        @if(session('coupon_success'))
+                            <div class="alert alert-success alert-sm py-2 mb-3">
+                                <i class="fas fa-check-circle me-1"></i> {{ session('coupon_success') }}
                             </div>
-                        </form>
+                        @endif
+                        @if(session('coupon_error'))
+                            <div class="alert alert-danger alert-sm py-2 mb-3">
+                                <i class="fas fa-exclamation-circle me-1"></i> {{ session('coupon_error') }}
+                            </div>
+                        @endif
+                        
+                        @if(isset($couponData) && $couponData)
+                            <div class="d-flex justify-content-between align-items-center bg-success bg-opacity-10 p-3 rounded mb-2">
+                                <div>
+                                    <i class="fas fa-tag text-success me-2"></i>
+                                    <strong>{{ $couponData['code'] }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ $couponData['name'] }}</small>
+                                </div>
+                                <form action="{{ route('customer.cart.remove-coupon') }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remover cupom">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <form action="{{ route('customer.cart.apply-coupon') }}" method="POST">
+                                @csrf
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-uppercase" name="coupon_code" placeholder="Digite o código" required>
+                                    <button class="btn btn-outline-primary" type="submit">Aplicar</button>
+                                </div>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>
