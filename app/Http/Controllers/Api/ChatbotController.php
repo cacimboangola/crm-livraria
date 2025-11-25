@@ -30,7 +30,7 @@ class ChatbotController extends Controller
     {
         $message = $request->input('message');
         $response = $this->generateResponse($message);
-        
+
         return response()->json($response);
     }
 
@@ -44,7 +44,7 @@ class ChatbotController extends Controller
     {
         // Converter para minúsculas para facilitar a comparação
         $messageLower = mb_strtolower($message, 'UTF-8');
-        
+
         // Verificar se é uma saudação
         if ($this->isGreeting($messageLower)) {
             return [
@@ -57,24 +57,26 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
-        // Verificar se é sobre busca de livros
-        if ($this->containsAny($messageLower, ['livro', 'livros', 'buscar', 'procurar', 'encontrar', 'busca'])) {
-            return $this->handleBookSearch($messageLower);
-        }
-        
-        // Verificar se é sobre pedidos
-        if ($this->containsAny($messageLower, ['pedido', 'pedidos', 'compra', 'compras', 'encomenda', 'fatura'])) {
+
+        // Verificar intenções específicas primeiro (mais precisas)
+
+        // 1. Pedidos específicos (prioridade alta)
+        if ($this->containsAny($messageLower, ['meus pedidos', 'meu pedido', 'minhas compras', 'minha compra', 'histórico de pedidos', 'status do pedido'])) {
             return $this->handleOrderQuery();
         }
-        
-        // Verificar se é sobre pontos de fidelidade
-        if ($this->containsAny($messageLower, ['ponto', 'pontos', 'fidelidade', 'programa', 'recompensa'])) {
+
+        // 2. Pontos de fidelidade específicos (prioridade alta)
+        if ($this->containsAny($messageLower, ['meus pontos', 'pontos de fidelidade', 'programa de fidelidade', 'saldo de pontos', 'quantos pontos'])) {
             return $this->handleLoyaltyQuery();
         }
-        
-        // Verificar se quer falar com atendente
-        if ($this->containsAny($messageLower, ['atendente', 'pessoa', 'humano', 'ajuda', 'suporte', 'falar'])) {
+
+        // 3. Busca de livros específica (prioridade alta)
+        if ($this->containsAny($messageLower, ['buscar livro', 'procurar livro', 'encontrar livro', 'quero um livro', 'livro de', 'livros de'])) {
+            return $this->handleBookSearch($messageLower);
+        }
+
+        // 4. Atendimento humano específico (prioridade alta)
+        if ($this->containsAny($messageLower, ['falar com atendente', 'atendente humano', 'pessoa real', 'suporte técnico', 'preciso de ajuda'])) {
             return [
                 'message' => 'Entendo que você prefere falar com um atendente humano. Por favor, entre em contato pelo telefone (244) 923-456-789 ou pelo email atendimento@livraria-angola.com durante nosso horário comercial (8h às 18h).',
                 'options' => [
@@ -84,7 +86,37 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
+        // Verificações mais amplas (prioridade média)
+
+        // 5. Busca geral de livros
+        if ($this->containsAny($messageLower, ['livro', 'livros', 'autor', 'categoria', 'ficção', 'romance', 'fantasia', 'biografia', 'história', 'infantil', 'negócios', 'autoajuda'])) {
+            return $this->handleBookSearch($messageLower);
+        }
+
+        // 6. Pedidos gerais
+        if ($this->containsAny($messageLower, ['pedido', 'compra', 'encomenda', 'fatura', 'ordem'])) {
+            return $this->handleOrderQuery();
+        }
+
+        // 7. Fidelidade geral
+        if ($this->containsAny($messageLower, ['ponto', 'pontos', 'fidelidade', 'recompensa', 'desconto'])) {
+            return $this->handleLoyaltyQuery();
+        }
+
+        // 8. Ajuda geral (prioridade baixa)
+        if ($this->containsAny($messageLower, ['ajuda', 'como', 'o que', 'onde', 'quando'])) {
+            return [
+                'message' => 'Posso ajudar você com várias coisas! Escolha uma das opções abaixo:',
+                'options' => [
+                    'Buscar livros',
+                    'Consultar pedidos',
+                    'Ver pontos de fidelidade',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
         // Resposta padrão para mensagens não reconhecidas
         return [
             'message' => 'Desculpe, não entendi sua pergunta. Como posso ajudar você?',
@@ -105,14 +137,30 @@ class ChatbotController extends Controller
      */
     private function isGreeting($message)
     {
-        $greetings = ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'ei', 'hey', 'hi', 'hello'];
-        
+        $greetings = [
+            'oi', 'olá', 'ola', 'oie', 'opa',
+            'bom dia', 'boa tarde', 'boa noite', 'bom tarde',
+            'ei', 'hey', 'hi', 'hello', 'hola',
+            'tchau', 'até logo', 'até mais', 'bye', 'adeus',
+            'obrigado', 'obrigada', 'valeu', 'thanks'
+        ];
+
+        // Verificar se a mensagem é apenas uma saudação (sem outras intenções)
+        $messageWords = explode(' ', trim($message));
+
         foreach ($greetings as $greeting) {
             if (strpos($message, $greeting) !== false) {
-                return true;
+                // Se a mensagem é curta (até 3 palavras) e contém saudação, é uma saudação
+                if (count($messageWords) <= 3) {
+                    return true;
+                }
+                // Se a saudação está no início da mensagem
+                if (strpos($message, $greeting) === 0) {
+                    return true;
+                }
             }
         }
-        
+
         return false;
     }
 
@@ -130,7 +178,7 @@ class ChatbotController extends Controller
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -144,7 +192,7 @@ class ChatbotController extends Controller
     {
         // Extrair termos de busca (remover palavras comuns)
         $searchTerms = $this->extractSearchTerms($message);
-        
+
         if (empty($searchTerms)) {
             return [
                 'message' => 'O que você gostaria de buscar? Você pode digitar o título, autor ou categoria do livro.',
@@ -155,23 +203,24 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         // Buscar livros com base nos termos
         $books = Book::where(function ($query) use ($searchTerms) {
             foreach ($searchTerms as $term) {
-                $query->orWhere('title', 'like', "%{$term}%")
-                      ->orWhere('author', 'like', "%{$term}%")
-                      ->orWhereHas('category', function ($q) use ($term) {
-                          $q->where('name', 'like', "%{$term}%");
-                      });
+                $query
+                    ->orWhere('title', 'like', "%{$term}%")
+                    ->orWhere('author', 'like', "%{$term}%")
+                    ->orWhereHas('category', function ($q) use ($term) {
+                        $q->where('name', 'like', "%{$term}%");
+                    });
             }
         })
-        ->limit(3)
-        ->get();
-        
+            ->limit(3)
+            ->get();
+
         if ($books->isEmpty()) {
             return [
-                'message' => "Não encontrei livros correspondentes à sua busca. Tente outros termos ou categorias.",
+                'message' => 'Não encontrei livros correspondentes à sua busca. Tente outros termos ou categorias.',
                 'options' => [
                     'Ver categorias',
                     'Buscar por autor',
@@ -179,11 +228,11 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         $bookList = $books->map(function ($book) {
             return "- {$book->title} por {$book->author} - Kz {$book->price}";
         })->join("\n");
-        
+
         return [
             'message' => "Encontrei estes livros para você:\n{$bookList}\n\nGostaria de mais informações sobre algum deles?",
             'options' => [
@@ -202,21 +251,52 @@ class ChatbotController extends Controller
      */
     private function extractSearchTerms($message)
     {
-        // Palavras a ignorar
+        // Palavras a ignorar (expandida e melhorada)
         $ignoreWords = [
-            'livro', 'livros', 'buscar', 'procurar', 'encontrar', 'sobre', 'como', 
-            'quero', 'gostaria', 'pode', 'por', 'favor', 'me', 'ajudar', 'busca'
+            'livro', 'livros', 'buscar', 'procurar', 'encontrar', 'sobre', 'como',
+            'quero', 'gostaria', 'pode', 'por', 'favor', 'me', 'ajudar', 'busca',
+            'um', 'uma', 'de', 'do', 'da', 'dos', 'das', 'para', 'com', 'em',
+            'que', 'qual', 'onde', 'quando', 'porque', 'ver', 'mostrar', 'listar'
         ];
-        
+
+        // Mapeamento de sinônimos para categorias
+        $categoryMappings = [
+            'ficção' => 'ficção científica',
+            'sci-fi' => 'ficção científica',
+            'scifi' => 'ficção científica',
+            'fantasia' => 'fantasia',
+            'romance' => 'romance',
+            'romântico' => 'romance',
+            'romântica' => 'romance',
+            'biografia' => 'biografia',
+            'biográfico' => 'biografia',
+            'história' => 'história',
+            'histórico' => 'história',
+            'infantil' => 'infantil',
+            'criança' => 'infantil',
+            'crianças' => 'infantil',
+            'negócios' => 'negócios',
+            'business' => 'negócios',
+            'empresarial' => 'negócios',
+            'autoajuda' => 'autoajuda',
+            'auto-ajuda' => 'autoajuda',
+            'desenvolvimento' => 'autoajuda'
+        ];
+
         // Dividir a mensagem em palavras
         $words = explode(' ', $message);
-        
+
         // Filtrar palavras ignoradas e palavras muito curtas
         $terms = array_filter($words, function ($word) use ($ignoreWords) {
             return !in_array($word, $ignoreWords) && strlen($word) > 2;
         });
-        
-        return array_values($terms); // Reindexar o array
+
+        // Aplicar mapeamento de sinônimos
+        $mappedTerms = array_map(function ($term) use ($categoryMappings) {
+            return isset($categoryMappings[$term]) ? $categoryMappings[$term] : $term;
+        }, $terms);
+
+        return array_values(array_unique($mappedTerms));  // Reindexar e remover duplicatas
     }
 
     /**
@@ -237,10 +317,10 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         // Obter o cliente associado ao usuário
         $customer = Customer::where('email', Auth::user()->email)->first();
-        
+
         if (!$customer) {
             return [
                 'message' => 'Não encontrei um perfil de cliente associado à sua conta. Por favor, complete seu perfil para acessar seus pedidos.',
@@ -251,13 +331,13 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         // Buscar os pedidos recentes
         $recentOrders = Invoice::where('customer_id', $customer->id)
             ->orderBy('invoice_date', 'desc')
             ->limit(3)
             ->get();
-        
+
         if ($recentOrders->isEmpty()) {
             return [
                 'message' => 'Você ainda não possui pedidos registrados em nosso sistema.',
@@ -268,11 +348,11 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         $orderList = $recentOrders->map(function ($order) {
             $status = $order->status;
             $statusText = '';
-            
+
             switch ($status) {
                 case 'paid':
                     $statusText = 'Pago';
@@ -289,10 +369,10 @@ class ChatbotController extends Controller
                 default:
                     $statusText = $status;
             }
-            
+
             return "- Pedido #{$order->id} ({$order->invoice_date->format('d/m/Y')}) - Kz {$order->total_amount} - Status: {$statusText}";
         })->join("\n");
-        
+
         return [
             'message' => "Aqui estão seus pedidos mais recentes:\n{$orderList}\n\nGostaria de ver mais detalhes de algum pedido específico?",
             'options' => [
@@ -321,10 +401,10 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         // Obter o cliente associado ao usuário
         $customer = Customer::where('email', Auth::user()->email)->first();
-        
+
         if (!$customer) {
             return [
                 'message' => 'Não encontrei um perfil de cliente associado à sua conta. Por favor, complete seu perfil para acessar o programa de fidelidade.',
@@ -335,10 +415,10 @@ class ChatbotController extends Controller
                 ]
             ];
         }
-        
+
         // Buscar os pontos de fidelidade
         $loyaltyPoints = $this->loyaltyService->getCustomerPoints($customer->id);
-        
+
         return [
             'message' => "Você possui {$loyaltyPoints->current_balance} pontos de fidelidade disponíveis.\nSeu nível atual é: " . ucfirst($loyaltyPoints->level) . ".\n\nContinue comprando para acumular mais pontos e subir de nível!",
             'options' => [

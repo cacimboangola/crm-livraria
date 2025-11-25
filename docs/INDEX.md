@@ -46,6 +46,13 @@
 - Rastreamento e métricas avançadas
 - Templates de email e integração com fidelidade
 
+### 🤖 [CHATBOT.md](CHATBOT.md) ⭐ **NOVO**
+**Assistente virtual inteligente**
+- Processamento de linguagem natural
+- Busca de livros com IA
+- Consulta de pedidos e fidelidade
+- Todas as mensagens e respostas possíveis
+
 ---
 
 ## 🔌 Integrações e API
@@ -135,6 +142,7 @@
 | Tópico | Documentação | Seção |
 |--------|--------------|-------|
 | **Campanhas de Email** | [CAMPAIGNS.md](CAMPAIGNS.md) | Completa |
+| **Chatbot/IA** | [CHATBOT.md](CHATBOT.md) | Completa |
 | **Pedidos Especiais** | [MODULES.md](MODULES.md) | Seção 7 |
 | **Rastreamento** | [CAMPAIGNS.md](CAMPAIGNS.md) | Métricas |
 | **APIs** | [API.md](API.md) | Todas |
@@ -153,6 +161,7 @@
 | [README.md](README.md) | ✅ Atualizado | Nov 2025 | 2.0.0 |
 | [USER-GUIDE.md](USER-GUIDE.md) | ✅ Atualizado | Nov 2025 | 2.0.0 |
 | [CAMPAIGNS.md](CAMPAIGNS.md) | ✨ **NOVO** | Nov 2025 | 2.0.0 |
+| [CHATBOT.md](CHATBOT.md) | ✨ **NOVO** | Nov 2025 | 2.0.0 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | ✅ Atualizado | Nov 2025 | 2.0.0 |
 | [MODULES.md](MODULES.md) | ✅ Atualizado | Nov 2025 | 2.0.0 |
 | [API.md](API.md) | ✅ Atualizado | Nov 2025 | 2.0.0 |

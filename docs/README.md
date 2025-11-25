@@ -30,10 +30,10 @@ Bem-vindo à documentação completa do CRM Livraria! Este índice irá guiá-lo
   - Programa de Fidelidade
   - **[Campanhas de Marketing](CAMPAIGNS.md)** - Sistema completo de email marketing
   - Pedidos Especiais
+  - **[Chatbot Inteligente](CHATBOT.md)** - Assistente virtual com IA
   - Sistema de Recomendações
   - Notificações
   - Portal do Cliente
-  - Chatbot
 
 ### 🔌 API e Integrações
 
@@ -127,6 +127,7 @@ Bem-vindo à documentação completa do CRM Livraria! Este índice irá guiá-lo
 - **Autenticação**: [ARCHITECTURE.md](ARCHITECTURE.md#autenticação-e-autorização)
 - **Fidelidade**: [MODULES.md](MODULES.md#4-módulo-de-fidelidade)
 - **Campanhas**: [CAMPAIGNS.md](CAMPAIGNS.md) - Documentação completa
+- **Chatbot**: [CHATBOT.md](CHATBOT.md) - Assistente virtual completo
 - **Pedidos Especiais**: [MODULES.md](MODULES.md#pedidos-especiais)
 - **Faturas**: [MODULES.md](MODULES.md#3-módulo-de-vendas-faturas)
 - **API**: [API.md](API.md)
