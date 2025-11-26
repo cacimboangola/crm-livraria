@@ -30,8 +30,7 @@ Processa mensagens do chatbot e retorna respostas inteligentes.
 
 ```json
 {
-  "message": "Olá, quero comprar um livro de ficção",
-  "customer_id": 1
+  "message": "Meus pedidos especiais"
 }
 ```
 
@@ -39,15 +38,51 @@ Processa mensagens do chatbot e retorna respostas inteligentes.
 
 ```json
 {
-  "response": "Olá! Temos ótimas opções de ficção. Aqui estão alguns livros populares...",
-  "suggestions": [
-    {
-      "id": 1,
-      "title": "1984",
-      "author": "George Orwell",
-      "price": 29.90
-    }
+  "message": "📚 **Seus Pedidos Especiais**\n\n📊 **Resumo:**\n• Total: 2 pedidos\n• Pendentes: 1 pedidos\n• Em andamento: 1 pedidos\n\n📋 **Últimos pedidos:**\n- ⏳ **Pedido #6**: O Código Da Vinci - Dan Brown (pending)\n- 📦 **Pedido #5**: Dom Quixote - Miguel de Cervantes (ordered)",
+  "options": [
+    "Ver detalhes completos",
+    "Fazer novo pedido especial",
+    "Voltar ao menu"
   ]
+}
+```
+
+**Funcionalidades do Chatbot:**
+- ✅ **Consulta de Pedidos Especiais**: "meus pedidos especiais", "status pedido especial"
+- ✅ **Criação de Pedidos**: "pedido especial", "livro em falta"
+- ✅ **Busca de Livros**: "buscar livro", "procurar livro"
+- ✅ **Suporte**: "falar com atendente", "ajuda"
+
+#### POST /api/chatbot/special-order
+
+Cria pedido especial via chatbot (requer autenticação).
+
+**Request:**
+
+```json
+{
+  "book_title": "Dom Quixote",
+  "book_author": "Miguel de Cervantes",
+  "book_isbn": "978-85-359-0277-8",
+  "book_publisher": "Editora Moderna",
+  "quantity": 1,
+  "delivery_preference": "pickup",
+  "customer_notes": "Preciso urgente para trabalho acadêmico"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pedido especial criado com sucesso!",
+  "special_order": {
+    "id": 7,
+    "book_title": "Dom Quixote",
+    "status": "pending",
+    "created_at": "2025-11-26T08:00:00Z"
+  }
 }
 ```
 
@@ -133,15 +168,30 @@ Retorna notificações não lidas do usuário autenticado.
   "data": [
     {
       "id": 1,
-      "title": "Nova fatura criada",
-      "message": "Fatura #001 foi criada com sucesso",
-      "type": "invoice",
-      "created_at": "2025-01-20T10:30:00Z"
+      "title": "Pedido Especial Encomendado! 📦",
+      "message": "Seu pedido especial \"O Código Da Vinci\" foi encomendado ao fornecedor. Você será notificado quando chegar!",
+      "type": "special_order_status",
+      "link": "/cliente/pedidos-especiais/6",
+      "created_at": "2025-11-26T08:00:00Z"
+    },
+    {
+      "id": 2,
+      "title": "Livro Chegou na Loja! ✅",
+      "message": "O livro \"Dom Quixote\" chegou em nossa loja e está sendo preparado para você.",
+      "type": "special_order_status",
+      "link": "/cliente/pedidos-especiais/5",
+      "created_at": "2025-11-26T09:00:00Z"
     }
   ],
-  "count": 5
+  "count": 2
 }
 ```
+
+**Tipos de Notificação:**
+- ✅ **special_order_status**: Mudanças de status em pedidos especiais
+- ✅ **invoice**: Notificações de faturas
+- ✅ **loyalty**: Programa de fidelidade
+- ✅ **campaign**: Campanhas de marketing
 
 **Status Codes:**
 - `200 OK`: Sucesso
@@ -502,33 +552,140 @@ Registra conversão de campanha.
 }
 ```
 
-### Pedidos Especiais
+### Pedidos Especiais (Admin)
 
 #### GET /special-orders
 
 Lista pedidos especiais (requer autenticação admin).
+
+**Parâmetros de Query:**
+- `status`: Filtrar por status (pending, ordered, received, notified, delivered, cancelled)
+- `customer_id`: Filtrar por cliente
+- `search`: Buscar por título ou autor
+- `page`: Página (paginação)
+- `per_page`: Itens por página (padrão: 10)
 
 **Response:**
 ```json
 {
   "data": [
     {
-      "id": 1,
-      "book_title": "Dom Quixote",
-      "book_author": "Miguel de Cervantes",
-      "customer": {
-        "id": 1,
-        "name": "João Silva",
-        "email": "joao@email.com"
-      },
+      "id": 6,
+      "book_title": "O Código Da Vinci",
+      "book_author": "Dan Brown",
+      "book_isbn": "978-85-359-0277-8",
+      "book_publisher": "Sextante",
+      "quantity": 2,
+      "delivery_preference": "pickup",
+      "customer_notes": "Preciso urgente para um trabalho acadêmico",
       "status": "pending",
-      "created_at": "2025-11-25T10:00:00Z"
+      "status_formatted": "Aguardando Encomenda",
+      "customer": {
+        "id": 24,
+        "name": "João Silva",
+        "email": "joao@teste.com"
+      },
+      "created_at": "2025-11-26T07:22:00Z",
+      "ordered_at": null,
+      "received_at": null,
+      "notified_at": null,
+      "delivered_at": null
     }
   ],
   "meta": {
     "current_page": 1,
-    "total": 10
+    "last_page": 1,
+    "per_page": 10,
+    "total": 1
   }
+}
+```
+
+### Pedidos Especiais (Cliente)
+
+#### GET /cliente/pedidos-especiais
+
+Lista pedidos especiais do cliente autenticado.
+
+**Parâmetros de Query:**
+- `status`: Filtrar por status
+- `page`: Página (paginação)
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 6,
+      "book_title": "O Código Da Vinci",
+      "book_author": "Dan Brown",
+      "quantity": 2,
+      "delivery_preference": "pickup",
+      "status": "pending",
+      "status_formatted": "Aguardando Encomenda",
+      "created_at": "2025-11-26T07:22:00Z"
+    }
+  ],
+  "stats": {
+    "total": 1,
+    "pending": 1,
+    "active": 1,
+    "delivered": 0
+  }
+}
+```
+
+#### GET /cliente/pedidos-especiais/{id}
+
+Detalhes de um pedido especial específico do cliente.
+
+**Response:**
+```json
+{
+  "id": 6,
+  "book_title": "O Código Da Vinci",
+  "book_author": "Dan Brown",
+  "book_isbn": "978-85-359-0277-8",
+  "book_publisher": "Sextante",
+  "quantity": 2,
+  "delivery_preference": "pickup",
+  "customer_notes": "Preciso urgente para um trabalho acadêmico",
+  "status": "pending",
+  "status_formatted": "Aguardando Encomenda",
+  "timeline": [
+    {
+      "status": "pending",
+      "label": "Pedido Criado",
+      "completed": true,
+      "date": "2025-11-26T07:22:00Z"
+    },
+    {
+      "status": "ordered",
+      "label": "Encomendado ao Fornecedor",
+      "completed": false,
+      "date": null
+    },
+    {
+      "status": "received",
+      "label": "Recebido na Loja",
+      "completed": false,
+      "date": null
+    },
+    {
+      "status": "notified",
+      "label": "Pronto para Retirada",
+      "completed": false,
+      "date": null
+    },
+    {
+      "status": "delivered",
+      "label": "Retirado",
+      "completed": false,
+      "date": null
+    }
+  ],
+  "can_cancel": true,
+  "created_at": "2025-11-26T07:22:00Z"
 }
 ```
 
@@ -611,13 +768,33 @@ Content-Type: application/json
 
 ## Changelog
 
+### v2.1.0 (2025-11-26)
+- ✅ **Sistema Completo de Acompanhamento de Pedidos Especiais**
+  - Interface web para clientes acompanharem pedidos
+  - Timeline visual com status em tempo real
+  - Notificações automáticas por mudança de status
+  - Integração completa com chatbot
+- ✅ **Chatbot Inteligente Expandido**
+  - Consulta de pedidos especiais via chat
+  - Criação de pedidos via formulário integrado
+  - Reconhecimento de intenções melhorado
+  - Redirecionamento para páginas específicas
+- ✅ **Sistema de Notificações Avançado**
+  - Notificações específicas para pedidos especiais
+  - Links diretos para páginas relevantes
+  - Diferentes tipos de notificação por contexto
+- ✅ **Endpoints do Cliente**
+  - GET /cliente/pedidos-especiais (lista)
+  - GET /cliente/pedidos-especiais/{id} (detalhes)
+  - PATCH /cliente/pedidos-especiais/{id}/cancelar (cancelar)
+
 ### v2.0.0 (2025-11-25)
 - ✅ Adicionados endpoints de rastreamento de campanhas
-- ✅ Adicionados endpoints de pedidos especiais
+- ✅ Adicionados endpoints de pedidos especiais (admin)
 - ✅ Implementados webhooks para conversões
 - ✅ Melhorada segurança com tokens
 
 ### v1.0.0 (2025-01-20)
 - Lançamento inicial da API
-- Endpoint de chatbot
+- Endpoint de chatbot básico
 - Endpoints básicos de notificações

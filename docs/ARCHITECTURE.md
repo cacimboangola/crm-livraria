@@ -541,6 +541,89 @@ Sempre incluir `@csrf` em formulários:
 
 ## Funcionalidades Recentes
 
+### Sistema de Acompanhamento de Pedidos Especiais (v2.1.0)
+Sistema completo para clientes acompanharem seus pedidos especiais:
+
+#### **Interface do Cliente**
+- **Dashboard de Pedidos** - Estatísticas visuais (total, pendentes, em andamento, entregues)
+- **Lista Paginada** - Cards elegantes com informações resumidas
+- **Filtros por Status** - Todos, aguardando, encomendado, recebido, pronto, entregue, cancelado
+- **Timeline Visual** - Acompanhamento passo a passo com ícones e datas
+- **Ações Contextuais** - Cancelar pedido (quando permitido), contato direto
+
+#### **Sistema de Notificações Automáticas**
+- **Notificações por Status** - Automáticas a cada mudança de status
+- **Tipos de Notificação**:
+  - 📦 **Encomendado**: "Pedido Especial Encomendado!"
+  - ✅ **Recebido**: "Livro Chegou na Loja!"
+  - 🎉 **Pronto**: "Seu Livro Está Pronto!"
+  - 🎊 **Concluído**: "Pedido Especial Concluído!"
+- **Persistência** - Salvas na tabela `notifications` com links diretos
+- **Email Opcional** - Envio de emails para status específicos
+
+#### **Integração com Chatbot**
+- **Consulta Inteligente** - "meus pedidos especiais", "status pedido especial"
+- **Resumo Automático** - Total, pendentes, em andamento com últimos 5 pedidos
+- **Redirecionamento** - "Ver detalhes completos" leva à página web
+- **Criação via Chat** - Formulário integrado para novos pedidos
+
+#### **Arquitetura do Sistema de Acompanhamento**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Customer Interface Layer                     │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │   Web Portal    │  │    Chatbot      │  │  Notifications  │ │
+│  │   (Blade)       │  │  (JavaScript)   │  │   (Database)    │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────────────┐
+│                    Controller Layer                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ Customer\       │  │ Api\Chatbot     │  │ SpecialOrder    │ │
+│  │ SpecialOrder    │  │ Controller      │  │ Controller      │ │
+│  │ Controller      │  │                 │  │ (Admin)         │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────────────┐
+│                    Service Layer                                │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ SpecialOrder    │  │ Notification    │  │ Email           │ │
+│  │ Service         │  │ Service         │  │ Service         │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────────────┐
+│                    Data Layer                                   │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ SpecialOrder    │  │ Notification    │  │ Customer        │ │
+│  │ Model           │  │ Model           │  │ Model           │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### **Fluxo de Notificação Automática**
+
+```
+1. Admin avança status no painel
+   ↓
+2. SpecialOrderController@advanceStatus
+   - Atualiza timestamps específicos
+   - Chama notifyCustomerStatusChange()
+   ↓
+3. notifyCustomerStatusChange() method
+   - Busca usuário associado ao cliente
+   - Cria notificação na tabela notifications
+   - Envia email (opcional, para status específicos)
+   ↓
+4. Cliente recebe notificação
+   - Via interface web (badge de notificação)
+   - Via email (se configurado)
+   - Link direto para o pedido específico
+```
+
 ### Campanhas de Marketing
 Sistema completo de email marketing com:
 - **Rastreamento avançado** - Abertura, cliques e conversões
@@ -548,28 +631,11 @@ Sistema completo de email marketing com:
 - **Templates responsivos** - HTML otimizado para email
 - **Integração com fidelidade** - Distribuição de pontos
 
-### Pedidos Especiais
-Gestão de livros fora de estoque:
+### Pedidos Especiais (Admin)
+Gestão administrativa de livros fora de estoque:
 - **Timeline de status** - Acompanhamento visual do progresso
-- **Notificações automáticas** - Emails para clientes e funcionários
 - **Workflow completo** - Da solicitação à entrega
 - **Métricas de performance** - Tempo de atendimento e conversão
-
-### Arquitetura das Novas Funcionalidades
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Campaign      │    │  SpecialOrder   │    │  Notification   │
-│   System        │    │   System        │    │   System        │
-└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
-          │                      │                      │
-          └──────────────────────┼──────────────────────┘
-                                 │
-                    ┌────────────▼────────────┐
-                    │     Service Layer       │
-                    │   (Orchestration)       │
-                    └─────────────────────────┘
-```
 
 ## Conclusão
 

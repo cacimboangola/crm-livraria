@@ -243,13 +243,14 @@ Combina características de On-Premise e Cloud, oferecendo flexibilidade.
 
 O **CRM Livraria** é um sistema **híbrido** que combina características dos três tipos principais:
 
-#### 🔵 Operacional (60%)
+#### 🔵 Operacional (55%)
 - ✅ Gestão completa de clientes
 - ✅ Emissão de faturas
 - ✅ Controle de estoque
 - ✅ Campanhas de marketing
 - ✅ Sistema de fidelidade
 - ✅ Portal do cliente
+- ✅ Gestão de pedidos especiais
 
 #### 🟢 Analítico (30%)
 - ✅ Análise de comportamento de compra
@@ -258,11 +259,13 @@ O **CRM Livraria** é um sistema **híbrido** que combina características dos t
 - ✅ Métricas de campanhas
 - ✅ Identificação de clientes inativos
 
-#### 🟡 Colaborativo (10%)
+#### 🟡 Colaborativo (15%)
 - ✅ Portal self-service
-- ✅ Chatbot
+- ✅ Chatbot inteligente com IA
 - ✅ Notificações em tempo real
 - ✅ Histórico compartilhado
+- ✅ Sistema de acompanhamento de pedidos especiais
+- ✅ Interface cliente-admin integrada
 
 ### Modelo de Negócio
 
@@ -331,6 +334,20 @@ Funcionalidades:
 - Histórico de pedidos
 - Dashboard de fidelidade
 - Self-service
+- Acompanhamento de pedidos especiais
+- Sistema de notificações
+- Chatbot integrado
+```
+
+### 7. Módulo de Pedidos Especiais (Operacional + Colaborativo)
+```
+Funcionalidades:
+- Solicitação via chatbot ou formulário
+- Timeline visual de acompanhamento
+- Notificações automáticas por status
+- Interface cliente e admin
+- Gestão de workflow completo
+- Métricas de performance
 ```
 
 ---

@@ -13,16 +13,17 @@ O CRM Livraria é uma aplicação web moderna e robusta que oferece gestão comp
 - **Programa de Fidelidade**: Sistema de pontos com ganho automático e resgate
 - **Campanhas de Marketing**: Criação e gestão de campanhas com rastreamento de métricas
 - **Sistema de Recomendações**: Sugestões inteligentes baseadas em histórico de compras
+- **Pedidos Especiais**: Sistema completo de acompanhamento com notificações automáticas
 - **Notificações**: Sistema completo de notificações em tempo real
-- **Chatbot**: Assistente virtual para atendimento ao cliente
+- **Chatbot Inteligente**: Assistente virtual com IA para atendimento e consultas
 
 ### 💡 O que é CRM?
 
 **CRM** (Customer Relationship Management) é uma estratégia de negócio focada em construir relacionamentos duradouros com clientes. Este sistema combina:
 
-- **CRM Operacional** (60%): Automatização de vendas, marketing e atendimento
+- **CRM Operacional** (55%): Automatização de vendas, marketing e atendimento
 - **CRM Analítico** (30%): Análise de dados e comportamento para decisões estratégicas
-- **CRM Colaborativo** (10%): Comunicação entre equipes e portal self-service
+- **CRM Colaborativo** (15%): Comunicação entre equipes e portal self-service
 
 📖 **[Leia o Guia Completo sobre CRM](docs/CRM-GUIDE.md)** para entender os diferentes tipos de CRM e como este sistema se encaixa.
 
@@ -259,6 +260,24 @@ O projeto segue o padrão **Service Layer**, separando responsabilidades:
 - Histórico de pedidos
 - Gestão de perfil
 - Dashboard de fidelidade
+- Acompanhamento de pedidos especiais
+- Sistema de notificações integrado
+
+### 8. Sistema de Pedidos Especiais
+- Solicitação via chatbot ou interface web
+- Timeline visual de acompanhamento
+- Notificações automáticas por mudança de status
+- Interface dedicada para clientes e administradores
+- Workflow completo: solicitação → encomenda → recebimento → entrega
+- Métricas de performance e tempo de atendimento
+
+### 9. Chatbot Inteligente
+- Reconhecimento de intenções com IA
+- Consulta de pedidos especiais
+- Criação de pedidos via formulário integrado
+- Busca de livros no catálogo
+- Redirecionamento para páginas específicas
+- Suporte 24/7 automatizado
 
 ## 🔄 Sistema de Filas
 
@@ -434,11 +453,44 @@ Este projeto é licenciado sob a [MIT License](https://opensource.org/licenses/M
 
 Desenvolvido com ❤️ para gestão moderna de livrarias.
 
+## 📚 Documentação Adicional
+
+- 📖 **[Guia Completo sobre CRM](docs/CRM-GUIDE.md)** - Entenda os tipos de CRM e como este sistema se encaixa
+- 🏗️ **[Arquitetura do Sistema](docs/ARCHITECTURE.md)** - Padrões arquiteturais e estrutura do código
+- 📡 **[Documentação da API](docs/API.md)** - Endpoints, exemplos e integrações
+- 📚 **[Sistema de Pedidos Especiais](docs/SPECIAL-ORDERS-TRACKING.md)** - Funcionalidade completa de acompanhamento
+- 🚀 **[Guia de Deploy](docs/DEPLOYMENT.md)** - Como colocar em produção
+
 ## 📞 Suporte
 
 Para dúvidas ou problemas:
 - Abra uma issue no repositório
 - Entre em contato via email
+- Consulte a documentação completa
+
+---
+
+## 🎉 Changelog
+
+### v2.1.0 (2025-11-26) - Sistema de Acompanhamento de Pedidos Especiais
+- ✅ **Interface completa para clientes** acompanharem pedidos especiais
+- ✅ **Timeline visual** com status em tempo real
+- ✅ **Notificações automáticas** por mudança de status
+- ✅ **Chatbot inteligente** expandido com consulta de pedidos
+- ✅ **Sistema de notificações** avançado com links diretos
+- ✅ **Documentação completa** atualizada
+
+### v2.0.0 (2025-11-25) - Campanhas e Pedidos Especiais
+- ✅ Sistema completo de campanhas de marketing
+- ✅ Rastreamento avançado (abertura, cliques, conversões)
+- ✅ Gestão administrativa de pedidos especiais
+- ✅ Webhooks para integrações externas
+
+### v1.0.0 (2025-01-20) - Lançamento Inicial
+- ✅ CRM completo para livrarias
+- ✅ Portal do cliente
+- ✅ Sistema de fidelidade
+- ✅ Chatbot básico
 
 ---
 
