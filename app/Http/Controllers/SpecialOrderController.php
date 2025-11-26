@@ -191,6 +191,9 @@ class SpecialOrderController extends Controller
 
         $specialOrder->save();
 
+        // Notificar o cliente sobre a mudança de status
+        $this->notifyCustomerStatusChange($specialOrder, $nextStatus);
+
         return redirect()
             ->route('special-orders.show', $specialOrder)
             ->with('success', 'Status atualizado para: ' . $specialOrder->status_formatted);
@@ -276,6 +279,64 @@ class SpecialOrderController extends Controller
             Log::error('Erro ao enviar email de pedido especial: ' . $e->getMessage(), [
                 'special_order_id' => $specialOrder->id,
                 'customer_email' => $customer->email,
+            ]);
+        }
+    }
+
+    /**
+     * Notificar cliente sobre mudança de status
+     */
+    protected function notifyCustomerStatusChange(SpecialOrder $specialOrder, string $newStatus): void
+    {
+        $customer = $specialOrder->customer;
+        
+        // Criar notificação no sistema (se cliente tiver usuário)
+        $user = User::where('email', $customer->email)->first();
+        if ($user) {
+            $statusMessages = [
+                SpecialOrder::STATUS_ORDERED => [
+                    'title' => 'Pedido Especial Encomendado! 📦',
+                    'message' => "Seu pedido especial \"{$specialOrder->book_title}\" foi encomendado ao fornecedor. Você será notificado quando chegar!"
+                ],
+                SpecialOrder::STATUS_RECEIVED => [
+                    'title' => 'Livro Chegou na Loja! ✅',
+                    'message' => "O livro \"{$specialOrder->book_title}\" chegou em nossa loja e está sendo preparado para você."
+                ],
+                SpecialOrder::STATUS_NOTIFIED => [
+                    'title' => 'Seu Livro Está Pronto! 🎉',
+                    'message' => "O livro \"{$specialOrder->book_title}\" está pronto para " . 
+                                ($specialOrder->delivery_preference === 'pickup' ? 'retirada na loja' : 'entrega') . "!"
+                ],
+                SpecialOrder::STATUS_DELIVERED => [
+                    'title' => 'Pedido Especial Concluído! 🎊',
+                    'message' => "Seu pedido especial \"{$specialOrder->book_title}\" foi " . 
+                                ($specialOrder->delivery_preference === 'pickup' ? 'retirado' : 'entregue') . " com sucesso!"
+                ]
+            ];
+
+            if (isset($statusMessages[$newStatus])) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'sender_id' => Auth::id(),
+                    'type' => 'special_order_status',
+                    'title' => $statusMessages[$newStatus]['title'],
+                    'message' => $statusMessages[$newStatus]['message'],
+                    'link' => route('customer.special-orders.show', $specialOrder->id),
+                    'read' => false,
+                ]);
+            }
+        }
+
+        // Enviar email de notificação (opcional)
+        try {
+            if ($newStatus === SpecialOrder::STATUS_NOTIFIED) {
+                Mail::to($customer->email)->send(new SpecialOrderReady($specialOrder));
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar email de notificação de status: ' . $e->getMessage(), [
+                'special_order_id' => $specialOrder->id,
+                'customer_email' => $customer->email,
+                'new_status' => $newStatus,
             ]);
         }
     }

@@ -175,7 +175,13 @@ Route::middleware(['auth', \App\Http\Middleware\CustomerMiddleware::class])->pre
     
     // Rotas de pontos de fidelidade
     Route::get('/fidelidade', [\App\Http\Controllers\Customer\CustomerPortalController::class, 'loyalty'])->name('customer.loyalty');
+    
+    // Rotas de pedidos especiais do cliente
+    Route::get('/pedidos-especiais', [\App\Http\Controllers\Customer\SpecialOrderController::class, 'index'])->name('customer.special-orders.index');
+    Route::get('/pedidos-especiais/{id}', [\App\Http\Controllers\Customer\SpecialOrderController::class, 'show'])->name('customer.special-orders.show');
+    Route::patch('/pedidos-especiais/{id}/cancelar', [\App\Http\Controllers\Customer\SpecialOrderController::class, 'cancel'])->name('customer.special-orders.cancel');
 });
 
 // Rota da API do Chatbot
 Route::post('/api/chatbot', [\App\Http\Controllers\Api\ChatbotController::class, 'processMessage']);
+Route::post('/api/chatbot/special-order', [\App\Http\Controllers\Api\ChatbotController::class, 'createSpecialOrder']);

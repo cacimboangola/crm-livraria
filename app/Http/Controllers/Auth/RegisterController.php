@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -63,12 +65,29 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => 'customer', // Novo usuário é cliente por padrão
-            'active' => true,
-        ]);
+        return DB::transaction(function () use ($data) {
+            // Criar o usuário
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => 'customer', // Novo usuário é cliente por padrão
+                'active' => true,
+            ]);
+
+            // Criar automaticamente o perfil de cliente
+            Customer::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => null,
+                'address' => null,
+                'city' => null,
+                'state' => null,
+                'postal_code' => null,
+                'birth_date' => null,
+            ]);
+
+            return $user;
+        });
     }
 }

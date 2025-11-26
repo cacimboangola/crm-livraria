@@ -15,6 +15,8 @@ class Chatbot {
         this.addMessage('bot', 'Olá! Bem-vindo à Livraria Angola. Como posso ajudar?', [
             'Buscar livros',
             'Meus pedidos',
+            'Meus pedidos especiais',
+            'Pedido especial',
             'Pontos de fidelidade',
             'Falar com atendente'
         ]);
@@ -216,6 +218,18 @@ class Chatbot {
                     return;
                 }
                 
+                // Verificar se é para criar formulário de pedido especial
+                if (message === 'Informar dados do livro') {
+                    this.showSpecialOrderForm();
+                    return;
+                }
+                
+                // Verificar se é para ver detalhes completos dos pedidos especiais
+                if (message === 'Ver detalhes completos') {
+                    this.redirectToSpecialOrders();
+                    return;
+                }
+                
                 this.handleUserInput(message);
             }
         });
@@ -375,6 +389,241 @@ class Chatbot {
             'Voltar ao menu',
             'Buscar livros'
         ]);
+    }
+
+    showSpecialOrderForm() {
+        // Adicionar mensagem explicativa
+        this.addMessage('bot', '📝 **Formulário de Pedido Especial**\n\nPreencha os dados do livro que você deseja solicitar:');
+        
+        // Criar formulário
+        const messagesContainer = document.querySelector('.chatbot-messages');
+        const formContainer = document.createElement('div');
+        formContainer.className = 'chatbot-form-container';
+        
+        formContainer.innerHTML = `
+            <form id="special-order-form" class="chatbot-form">
+                <div class="form-group">
+                    <label for="book_title">📚 Título do Livro *</label>
+                    <input type="text" id="book_title" name="book_title" required placeholder="Ex: Dom Casmurro">
+                </div>
+                
+                <div class="form-group">
+                    <label for="book_author">👤 Autor</label>
+                    <input type="text" id="book_author" name="book_author" placeholder="Ex: Machado de Assis">
+                </div>
+                
+                <div class="form-group">
+                    <label for="book_publisher">🏢 Editora</label>
+                    <input type="text" id="book_publisher" name="book_publisher" placeholder="Ex: Companhia das Letras">
+                </div>
+                
+                <div class="form-group">
+                    <label for="book_isbn">🔢 ISBN</label>
+                    <input type="text" id="book_isbn" name="book_isbn" placeholder="Ex: 978-85-359-0277-5">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">📦 Quantidade *</label>
+                    <select id="quantity" name="quantity" required>
+                        <option value="1">1 exemplar</option>
+                        <option value="2">2 exemplares</option>
+                        <option value="3">3 exemplares</option>
+                        <option value="4">4 exemplares</option>
+                        <option value="5">5 exemplares</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="delivery_preference">🚚 Forma de Entrega *</label>
+                    <select id="delivery_preference" name="delivery_preference" required>
+                        <option value="pickup">Retirada na loja</option>
+                        <option value="delivery">Entrega em domicílio</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer_notes">💬 Observações</label>
+                    <textarea id="customer_notes" name="customer_notes" placeholder="Informações adicionais sobre o livro..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">✅ Solicitar Pedido</button>
+                    <button type="button" class="btn-cancel">❌ Cancelar</button>
+                </div>
+            </form>
+        `;
+        
+        messagesContainer.appendChild(formContainer);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Adicionar estilos do formulário
+        this.addFormStyles();
+        
+        // Bind eventos do formulário
+        this.bindFormEvents();
+    }
+
+    addFormStyles() {
+        if (document.getElementById('chatbot-form-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'chatbot-form-styles';
+        style.textContent = `
+            .chatbot-form-container {
+                margin: 10px 0;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #e9ecef;
+            }
+            
+            .chatbot-form .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .chatbot-form label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #495057;
+                font-size: 14px;
+            }
+            
+            .chatbot-form input,
+            .chatbot-form select,
+            .chatbot-form textarea {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                font-size: 14px;
+                font-family: inherit;
+                box-sizing: border-box;
+            }
+            
+            .chatbot-form input:focus,
+            .chatbot-form select:focus,
+            .chatbot-form textarea:focus {
+                outline: none;
+                border-color: #3490dc;
+                box-shadow: 0 0 0 2px rgba(52, 144, 220, 0.2);
+            }
+            
+            .chatbot-form textarea {
+                resize: vertical;
+                min-height: 60px;
+            }
+            
+            .form-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .btn-submit,
+            .btn-cancel {
+                flex: 1;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .btn-submit {
+                background: #28a745;
+                color: white;
+            }
+            
+            .btn-submit:hover {
+                background: #218838;
+            }
+            
+            .btn-cancel {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-cancel:hover {
+                background: #5a6268;
+            }
+        `;
+        
+        document.head.appendChild(style);
+    }
+
+    bindFormEvents() {
+        const form = document.getElementById('special-order-form');
+        const cancelBtn = form.querySelector('.btn-cancel');
+        
+        // Evento de submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.submitSpecialOrder(form);
+        });
+        
+        // Evento de cancelar
+        cancelBtn.addEventListener('click', () => {
+            form.closest('.chatbot-form-container').remove();
+            this.addMessage('bot', 'Formulário cancelado. Como posso ajudar?', [
+                'Buscar livros',
+                'Meus pedidos',
+                'Pedido especial',
+                'Voltar ao menu'
+            ]);
+        });
+    }
+
+    submitSpecialOrder(form) {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Mostrar loading
+        this.addMessage('user', '📝 Enviando pedido especial...');
+        this.addTypingIndicator();
+        
+        // Enviar para o servidor
+        fetch('/api/chatbot/special-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': this.token
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.removeTypingIndicator();
+            form.closest('.chatbot-form-container').remove();
+            
+            if (data.success) {
+                this.addMessage('bot', data.message, data.options);
+            } else {
+                this.addMessage('bot', data.message, data.options);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao enviar pedido especial:', error);
+            this.removeTypingIndicator();
+            form.closest('.chatbot-form-container').remove();
+            this.addMessage('bot', 'Erro ao processar pedido. Tente novamente ou entre em contato conosco.', [
+                'Tentar novamente',
+                'Falar com atendente',
+                'Voltar ao menu'
+            ]);
+        });
+    }
+
+    redirectToSpecialOrders() {
+        // Adicionar mensagem de confirmação
+        this.addMessage('bot', '🔄 Redirecionando para a página de pedidos especiais...', []);
+        
+        // Redirecionar após um pequeno delay
+        setTimeout(() => {
+            window.location.href = '/cliente/pedidos-especiais';
+        }, 1000);
     }
 }
 

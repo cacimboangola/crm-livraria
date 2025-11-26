@@ -52,6 +52,8 @@ class ChatbotController extends Controller
                 'options' => [
                     'Buscar livros',
                     'Meus pedidos',
+                    'Meus pedidos especiais',
+                    'Pedido especial',
                     'Pontos de fidelidade',
                     'Falar com atendente'
                 ]
@@ -70,12 +72,22 @@ class ChatbotController extends Controller
             return $this->handleLoyaltyQuery();
         }
 
-        // 3. Busca de livros específica (prioridade alta)
+        // 3. Consulta de pedidos especiais específica (prioridade alta)
+        if ($this->containsAny($messageLower, ['meus pedidos especiais', 'pedidos especiais', 'status pedido especial', 'acompanhar pedido especial'])) {
+            return $this->handleSpecialOrderQuery();
+        }
+
+        // 4. Pedido especial específico (prioridade alta)
+        if ($this->containsAny($messageLower, ['pedido especial', 'livro em falta', 'não encontrei', 'não tem', 'encomenda especial', 'solicitar livro'])) {
+            return $this->handleSpecialOrderRequest($messageLower);
+        }
+
+        // 5. Busca de livros específica (prioridade alta)
         if ($this->containsAny($messageLower, ['buscar livro', 'procurar livro', 'encontrar livro', 'quero um livro', 'livro de', 'livros de'])) {
             return $this->handleBookSearch($messageLower);
         }
 
-        // 4. Atendimento humano específico (prioridade alta)
+        // 6. Atendimento humano específico (prioridade alta)
         if ($this->containsAny($messageLower, ['falar com atendente', 'atendente humano', 'pessoa real', 'suporte técnico', 'preciso de ajuda'])) {
             return [
                 'message' => 'Entendo que você prefere falar com um atendente humano. Escolha uma das opções de contato:
@@ -95,22 +107,22 @@ Horário de atendimento: ' . config('contact.business_hours.display'),
 
         // Verificações mais amplas (prioridade média)
 
-        // 5. Busca geral de livros
+        // 6. Busca geral de livros
         if ($this->containsAny($messageLower, ['livro', 'livros', 'autor', 'categoria', 'ficção', 'romance', 'fantasia', 'biografia', 'história', 'infantil', 'negócios', 'autoajuda'])) {
             return $this->handleBookSearch($messageLower);
         }
 
-        // 6. Pedidos gerais
+        // 7. Pedidos gerais
         if ($this->containsAny($messageLower, ['pedido', 'compra', 'encomenda', 'fatura', 'ordem'])) {
             return $this->handleOrderQuery();
         }
 
-        // 7. Fidelidade geral
+        // 8. Fidelidade geral
         if ($this->containsAny($messageLower, ['ponto', 'pontos', 'fidelidade', 'recompensa', 'desconto'])) {
             return $this->handleLoyaltyQuery();
         }
 
-        // 8. Ajuda geral (prioridade baixa)
+        // 9. Ajuda geral (prioridade baixa)
         if ($this->containsAny($messageLower, ['ajuda', 'como', 'o que', 'onde', 'quando'])) {
             return [
                 'message' => 'Posso ajudar você com várias coisas! Escolha uma das opções abaixo:',
@@ -433,5 +445,271 @@ Horário de atendimento: ' . config('contact.business_hours.display'),
                 'Ver histórico de pontos'
             ]
         ];
+    }
+
+    /**
+     * Processa solicitações de pedidos especiais
+     *
+     * @param string $message
+     * @return array
+     */
+    private function handleSpecialOrderRequest($message)
+    {
+        // Verificar se o usuário está autenticado
+        if (!Auth::check()) {
+            return [
+                'message' => 'Para fazer um pedido especial, você precisa estar logado. Por favor, faça login na sua conta.',
+                'options' => [
+                    'Como fazer login?',
+                    'Voltar ao menu',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
+        // Obter o cliente associado ao usuário
+        $customer = \App\Models\Customer::where('email', Auth::user()->email)->first();
+
+        if (!$customer) {
+            return [
+                'message' => 'Não encontrei um perfil de cliente associado à sua conta. Por favor, complete seu perfil para fazer pedidos especiais.',
+                'options' => [
+                    'Como completar meu perfil?',
+                    'Voltar ao menu',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
+        // Verificar se há pedidos especiais ativos
+        $activePedidos = \App\Models\SpecialOrder::where('customer_id', $customer->id)
+            ->active()
+            ->count();
+
+        if ($activePedidos >= 3) {
+            return [
+                'message' => 'Você já possui 3 pedidos especiais ativos. Por favor, aguarde a conclusão de alguns pedidos antes de fazer novos.',
+                'options' => [
+                    'Ver meus pedidos especiais',
+                    'Voltar ao menu',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
+        return [
+            'message' => '📚 **Pedido Especial de Livro**
+
+Ótimo! Posso ajudar você a solicitar um livro que não está disponível em nosso estoque.
+
+Para fazer um pedido especial, preciso de algumas informações:
+
+• **Título do livro**
+• **Autor** (se souber)
+• **Editora** (opcional)
+• **Quantidade desejada**
+
+Como você gostaria de proceder?',
+            'options' => [
+                'Informar dados do livro',
+                'Buscar por ISBN',
+                'Preciso de ajuda',
+                'Voltar ao menu'
+            ]
+        ];
+    }
+
+    /**
+     * Processa consultas sobre pedidos especiais
+     *
+     * @return array
+     */
+    private function handleSpecialOrderQuery()
+    {
+        // Verificar se o usuário está autenticado
+        if (!Auth::check()) {
+            return [
+                'message' => 'Para consultar seus pedidos especiais, você precisa estar logado.',
+                'options' => [
+                    'Como fazer login?',
+                    'Voltar ao menu',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
+        // Obter o cliente associado ao usuário
+        $customer = \App\Models\Customer::where('email', Auth::user()->email)->first();
+
+        if (!$customer) {
+            return [
+                'message' => 'Não encontrei um perfil de cliente associado à sua conta.',
+                'options' => [
+                    'Como completar meu perfil?',
+                    'Voltar ao menu',
+                    'Falar com atendente'
+                ]
+            ];
+        }
+
+        // Buscar pedidos especiais do cliente
+        $specialOrders = \App\Models\SpecialOrder::where('customer_id', $customer->id)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        if ($specialOrders->isEmpty()) {
+            return [
+                'message' => 'Você ainda não possui pedidos especiais.
+
+📚 **Como fazer um pedido especial?**
+Use a opção "Pedido especial" no menu para solicitar livros que não estão em nosso estoque atual.',
+                'options' => [
+                    'Fazer pedido especial',
+                    'Buscar livros',
+                    'Voltar ao menu'
+                ]
+            ];
+        }
+
+        // Contar pedidos por status
+        $totalPedidos = $specialOrders->count();
+        $pendentes = $specialOrders->where('status', 'pending')->count();
+        $ativos = $specialOrders->whereIn('status', ['pending', 'ordered', 'received', 'notified'])->count();
+
+        // Criar lista dos pedidos
+        $orderList = $specialOrders->map(function ($order) {
+            $statusEmoji = match ($order->status) {
+                'pending' => '⏳',
+                'ordered' => '📦',
+                'received' => '✅',
+                'notified' => '🔔',
+                'delivered' => '🎉',
+                'cancelled' => '❌',
+                default => '📋'
+            };
+
+            return "- {$statusEmoji} **Pedido #{$order->id}**: {$order->book_title}" . 
+                   ($order->book_author ? " - {$order->book_author}" : '') . 
+                   " ({$order->status_formatted})";
+        })->join("\n");
+
+        return [
+            'message' => "📚 **Seus Pedidos Especiais**
+
+📊 **Resumo:**
+• Total: {$totalPedidos} pedidos
+• Pendentes: {$pendentes} pedidos
+• Em andamento: {$ativos} pedidos
+
+📋 **Últimos pedidos:**
+{$orderList}
+
+💡 **Dica:** Clique em \"Ver detalhes\" para acompanhar o status completo de cada pedido.",
+            'options' => [
+                'Ver detalhes completos',
+                'Fazer novo pedido especial',
+                'Voltar ao menu'
+            ]
+        ];
+    }
+
+    /**
+     * Cria um pedido especial via chatbot
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createSpecialOrder(Request $request)
+    {
+        try {
+            // Verificar se o usuário está autenticado
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você precisa estar logado para fazer um pedido especial.',
+                    'options' => ['Como fazer login?', 'Voltar ao menu']
+                ]);
+            }
+
+            // Obter o cliente associado ao usuário
+            $customer = \App\Models\Customer::where('email', Auth::user()->email)->first();
+
+            if (!$customer) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Perfil de cliente não encontrado. Complete seu perfil primeiro.',
+                    'options' => ['Como completar perfil?', 'Voltar ao menu']
+                ]);
+            }
+
+            // Validar os dados
+            $validated = $request->validate([
+                'book_title' => 'required|string|max:255',
+                'book_author' => 'nullable|string|max:255',
+                'book_publisher' => 'nullable|string|max:255',
+                'book_isbn' => 'nullable|string|max:20',
+                'quantity' => 'required|integer|min:1|max:10',
+                'customer_notes' => 'nullable|string|max:500',
+                'delivery_preference' => 'required|in:pickup,delivery'
+            ]);
+
+            // Verificar limite de pedidos especiais ativos
+            $activePedidos = \App\Models\SpecialOrder::where('customer_id', $customer->id)
+                ->active()
+                ->count();
+
+            if ($activePedidos >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você já possui 3 pedidos especiais ativos. Aguarde a conclusão de alguns pedidos.',
+                    'options' => ['Ver meus pedidos especiais', 'Voltar ao menu']
+                ]);
+            }
+
+            // Criar o pedido especial
+            $specialOrder = \App\Models\SpecialOrder::create([
+                'customer_id' => $customer->id,
+                'user_id' => Auth::id(),
+                'book_title' => $validated['book_title'],
+                'book_author' => $validated['book_author'],
+                'book_publisher' => $validated['book_publisher'],
+                'book_isbn' => $validated['book_isbn'],
+                'quantity' => $validated['quantity'],
+                'customer_notes' => $validated['customer_notes'],
+                'delivery_preference' => $validated['delivery_preference'],
+                'status' => \App\Models\SpecialOrder::STATUS_PENDING,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "✅ **Pedido Especial Criado!**
+
+**Pedido #{$specialOrder->id}**
+📚 Livro: {$specialOrder->book_title}
+👤 Autor: " . ($specialOrder->book_author ?: 'Não informado') . "
+📦 Quantidade: {$specialOrder->quantity}
+🚚 Entrega: " . ($specialOrder->delivery_preference === 'pickup' ? 'Retirada na loja' : 'Entrega em domicílio') . '
+
+Seu pedido foi registrado e nossa equipe irá procurar o livro junto aos fornecedores. Você será notificado quando o livro chegar!',
+                'options' => [
+                    'Ver meus pedidos especiais',
+                    'Fazer outro pedido',
+                    'Voltar ao menu'
+                ]
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dados inválidos: ' . implode(', ', array_flatten($e->errors())),
+                'options' => ['Tentar novamente', 'Voltar ao menu']
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro interno. Tente novamente ou entre em contato conosco.',
+                'options' => ['Tentar novamente', 'Falar com atendente', 'Voltar ao menu']
+            ]);
+        }
     }
 }

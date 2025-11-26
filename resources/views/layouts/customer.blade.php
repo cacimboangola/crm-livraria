@@ -366,6 +366,11 @@
                                 <i class="fas fa-star me-2"></i>Fidelidade
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-modern {{ request()->routeIs('customer.special-orders.*') ? 'active' : '' }}" href="{{ route('customer.special-orders.index') }}">
+                                <i class="fas fa-book-open me-2"></i>Pedidos Especiais
+                            </a>
+                        </li>
                     @endauth
                 </ul>
                 <ul class="navbar-nav">
@@ -469,6 +474,7 @@
                         <li class="mb-2"><a href="{{ route('customer.catalog') }}"><i class="fas fa-books me-2"></i>Catálogo</a></li>
                         @auth
                         <li class="mb-2"><a href="{{ route('customer.orders') }}"><i class="fas fa-receipt me-2"></i>Meus Pedidos</a></li>
+                        <li class="mb-2"><a href="{{ route('customer.special-orders.index') }}"><i class="fas fa-book-open me-2"></i>Pedidos Especiais</a></li>
                         <li class="mb-2"><a href="{{ route('customer.loyalty') }}"><i class="fas fa-star me-2"></i>Programa de Fidelidade</a></li>
                         @endauth
                         <li class="mb-2"><a href="#"><i class="fas fa-info-circle me-2"></i>Sobre Nós</a></li>
