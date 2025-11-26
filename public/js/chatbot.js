@@ -209,6 +209,13 @@ class Chatbot {
         document.querySelector('.chatbot-messages').addEventListener('click', (e) => {
             if (e.target.classList.contains('chatbot-option')) {
                 const message = e.target.textContent;
+                
+                // Verificar se é uma ação especial
+                if (message === 'Abrir WhatsApp') {
+                    this.openWhatsApp();
+                    return;
+                }
+                
                 this.handleUserInput(message);
             }
         });
@@ -351,6 +358,23 @@ class Chatbot {
         if (typingElement) {
             typingElement.remove();
         }
+    }
+
+    openWhatsApp() {
+        // Buscar configurações do Laravel via meta tags
+        const whatsappNumber = document.querySelector('meta[name="whatsapp-number"]')?.content || '244923456789';
+        const whatsappMessage = document.querySelector('meta[name="whatsapp-message"]')?.content || 'Olá! Vim através do chatbot da Livraria CRM e gostaria de mais informações sobre os livros.';
+        const message = encodeURIComponent(whatsappMessage);
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+        
+        // Abrir WhatsApp em nova aba
+        window.open(whatsappUrl, '_blank');
+        
+        // Adicionar mensagem de confirmação no chat
+        this.addMessage('bot', '✅ Abrindo WhatsApp... Você será redirecionado para conversar com nosso atendimento!', [
+            'Voltar ao menu',
+            'Buscar livros'
+        ]);
     }
 }
 

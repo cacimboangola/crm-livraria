@@ -78,11 +78,17 @@ class ChatbotController extends Controller
         // 4. Atendimento humano específico (prioridade alta)
         if ($this->containsAny($messageLower, ['falar com atendente', 'atendente humano', 'pessoa real', 'suporte técnico', 'preciso de ajuda'])) {
             return [
-                'message' => 'Entendo que você prefere falar com um atendente humano. Por favor, entre em contato pelo telefone (244) 923-456-789 ou pelo email atendimento@livraria-angola.com durante nosso horário comercial (8h às 18h).',
+                'message' => 'Entendo que você prefere falar com um atendente humano. Escolha uma das opções de contato:
+
+📞 Telefone: ' . config('contact.phone.display') . '
+📧 Email: ' . config('contact.email.general') . '  
+💬 WhatsApp: ' . config('contact.whatsapp.display') . '
+
+Horário de atendimento: ' . config('contact.business_hours.display'),
                 'options' => [
+                    'Abrir WhatsApp',
                     'Voltar ao menu',
-                    'Buscar livros',
-                    'Meus pedidos'
+                    'Buscar livros'
                 ]
             ];
         }

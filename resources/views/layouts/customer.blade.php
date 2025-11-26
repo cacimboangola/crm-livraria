@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="whatsapp-number" content="{{ config('contact.whatsapp.number') }}">
+    <meta name="whatsapp-message" content="{{ config('contact.whatsapp.messages.chatbot') }}">
     <title>{{ config('app.name', 'CRM Livraria') }} - Portal do Cliente</title>
     
     <!-- Scripts -->
     <script src="{{ asset('js/chatbot.js') }}" defer></script>
+    <script src="{{ asset('js/whatsapp-widget.js') }}" defer></script>
     
     <!-- Bootstrap CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -449,10 +452,15 @@
                     <h5><i class="fas fa-book-reader me-2"></i>Livraria CRM</h5>
                     <p>Sua livraria online com os melhores títulos e preços. Descubra mundos incríveis através da leitura.</p>
                     <div class="social-links d-flex gap-2 mt-3">
-                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="{{ config('contact.social_media.facebook') }}" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{{ config('contact.social_media.instagram') }}" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ config('contact.social_media.twitter') }}" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://wa.me/{{ config('contact.whatsapp.number') }}?text={{ urlencode(config('contact.whatsapp.messages.general')) }}" 
+                           target="_blank" 
+                           title="WhatsApp">
+                           <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="{{ config('contact.social_media.youtube') }}" title="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
@@ -473,19 +481,28 @@
                     <div class="contact-info">
                         <div>
                             <i class="fas fa-map-marker-alt me-2"></i>
-                            <span>Rua dos Livros, 123<br>Luanda, Angola</span>
+                            <span>{{ config('contact.address.street') }}<br>{{ config('contact.address.city') }}, {{ config('contact.address.country') }}</span>
                         </div>
                         <div>
                             <i class="fas fa-phone me-2"></i>
-                            <span>(+244) 923-456-789</span>
+                            <a href="tel:{{ config('contact.phone.number') }}" class="text-decoration-none">{{ config('contact.phone.display') }}</a>
                         </div>
                         <div>
                             <i class="fas fa-envelope me-2"></i>
-                            <span>contato@livraria-crm.com</span>
+                            <a href="mailto:{{ config('contact.email.general') }}" class="text-decoration-none">{{ config('contact.email.general') }}</a>
+                        </div>
+                        <div>
+                            <i class="fab fa-whatsapp me-2"></i>
+                            <a href="https://wa.me/{{ config('contact.whatsapp.number') }}?text={{ urlencode(config('contact.whatsapp.messages.general')) }}" 
+                               target="_blank" 
+                               class="text-decoration-none"
+                               title="Falar no WhatsApp">
+                               WhatsApp: {{ config('contact.whatsapp.display') }}
+                            </a>
                         </div>
                         <div>
                             <i class="fas fa-clock me-2"></i>
-                            <span>Seg-Sex: 8h-18h</span>
+                            <span>{{ config('contact.business_hours.display') }}</span>
                         </div>
                     </div>
                 </div>
